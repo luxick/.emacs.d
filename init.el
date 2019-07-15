@@ -58,16 +58,45 @@
  use-package-always-ensure t
  use-package-verbose t)
 
-;; Fullscreen by default, as early as possible.
+;; Set the zenburn theme
+;; TODO
 
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(use-package solarized-theme
+  :config
+  (load-theme 'solarized-light t)
+  (let ((line (face-attribute 'mode-line :underline)))
+    (set-face-attribute 'mode-line          nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :underline  line)
+    (set-face-attribute 'mode-line          nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
+
+
+;; Use moody modeline
+(use-package moody
+  :config
+  (setq x-underline-at-descent-line t)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode))
+
+;; Minions to add a menu with minor modes to the modeline
+(use-package minions
+  :config (minions-mode 1))
+
+;;
+(use-package undo-tree
+  :init
+  global-undo-tree-mode)
 
 ;; UTF-8 everywhere, please.
-
 (prefer-coding-system 'utf-8)
 
-(ignore-errors
-  (set-frame-font "Iosevka-14"))
+(set-face-attribute 'default nil
+                    :family "Hack"
+                    :height 110
+                    :weight 'normal
+                    :width 'normal)
 
 ;; Any Customize-based settings should live in custom.el, not here.
 
@@ -94,18 +123,7 @@
 
 (diminish 'eldoc-mode)
 
-;; The Doom Emacs themes look really good. I use opera.
-
-(use-package doom-themes
-  :config
-  (load-theme 'doom-tomorrow-night)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config)
-
-  ;; Docstrings should be a bit lighter, since they're important.
-  (custom-theme-set-faces
-  'doom-tomorrow-night
-  '(font-lock-doc-face ((t (:foreground "#D8D2C1"))))))
+(use-package all-the-icons)
 
 ;; Ensure that items in the PATH are made available to Emacs. This should
 ;; probably just come with the main distribution.
@@ -804,6 +822,9 @@
 					 dired-directory
 					 (revert-buffer-function " %b"
 								 ("%b - Dir:  " default-directory)))))))
+
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 ;; Make check lists in org-mode pretty
 (add-hook 'org-mode-hook (lambda ()

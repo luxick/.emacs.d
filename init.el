@@ -84,11 +84,6 @@
 (use-package minions
   :config (minions-mode 1))
 
-;;
-(use-package undo-tree
-  :init
-  global-undo-tree-mode)
-
 ;; UTF-8 everywhere, please.
 (prefer-coding-system 'utf-8)
 
@@ -104,12 +99,10 @@
 (load custom-file 'noerror)
 
 ;; Always prefer newer files.
-
 (setq load-prefer-newer t)
 
 ;; Disable otiose GUI settings: they just waste space.
 ;; fringe-mode is especially ruinous performance-wise.
-
 (when (window-system)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -129,7 +122,6 @@
 ;; probably just come with the main distribution.
 
 ;; Recentf comes with Emacs but it should always be enabled.
-
 (use-package recentf
   :init (recentf-mode t)
   :config
@@ -139,7 +131,6 @@
 ;; Ivy makes most minibuffer prompts sortable and filterable. I used
 ;; to use helm, but it was too slow. Unfortunately org-ref depends on
 ;; it, but I never load it, so we good.
-
 (use-package ivy
   :ensure t
   :init
@@ -158,7 +149,6 @@
   :diminish)
 
 ;; ivy-rich makes Ivy look a little bit more like Helm.
-
 (use-package ivy-rich
   :after counsel
   :custom
@@ -171,7 +161,6 @@
 (use-package ivy-hydra)
 
 ;; Slurp environment variables from the shell.
-
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
@@ -182,7 +171,6 @@
 
 ;; Counsel applies Ivy-like behavior to other builtin features of
 ;; emacs, e.g. search.
-
 (use-package counsel
   :ensure t
   :after ivy
@@ -200,13 +188,11 @@
   :diminish)
 
 ;; Deadgrep is amazing.
-
 (use-package deadgrep
   :bind (("C-c h" . deadgrep)))
 
 ;; projectile comes with Emacs these days, but we want to enable
 ;; caching, since I work on big projects.
-
 (use-package projectile
   :bind (("C-c f" . projectile-find-file))
   :config
@@ -215,32 +201,27 @@
   :diminish)
 
 ;; Counsel and projectile should work together.
-
 (use-package counsel-projectile
   :bind (("C-c f" . counsel-projectile))
   :init
   (counsel-projectile-mode))
 
 ;; Sort commands by recency in ivy windows.
-
 (use-package smex)
 
 ;; Keychain stuff. Note to self: if you keep having to enter your
 ;; keychain password on OS X, make sure that you have the following in .ssh/config:
 ;; Host *
 ;;    UseKeychain yes
-
 (use-package keychain-environment
   :config
   (keychain-refresh-environment))
 
 ;; Elm stuff.
-
 (use-package elm-mode
   :disabled)
 
 ;; Company is the best Emacs completion system.
-
 (use-package company
   :bind (("C-." . company-complete))
   :diminish company-mode
@@ -284,13 +265,11 @@
   (add-to-list 'magit-no-confirm 'stage-all-changes))
 
 ;; Unclear whether this does anything at the moment.
-
 (use-package libgit
   :disabled
   :after magit)
 
-;; Since I grew up on Textmate, I'm more-or-less reliant on snippets.
-
+;; Since I grew up on Textmate, I'm more-or-less reliant on snippets
 (use-package yasnippet
   :config
   (yas-global-mode 1)
@@ -298,33 +277,24 @@
   :diminish yas-minor-mode)
 
 ;; I usually don't edit very large files, but saveplace is nice on the occasions I do.
-
 (use-package saveplace
   :disabled
   :config (setq-default save-place t))
 
 ;; Haskell and Elisp are made a lot easier when delimiters are nicely color-coded.
-
 (use-package rainbow-delimiters
   :disabled
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; multiple-cursors is better than cua-selection-mode.
 ;; TODO: learn ace-mc
-
 (use-package multiple-cursors
   :bind (("C-c M" . mc/edit-lines)))
 
-;; Common Haskell snippets. These take a while to load, so no need to block on startup.
-
-(use-package haskell-snippets
-  :defer yasnippet)
-
 ;; The beauty of undo-tree is that it means that, once you've typed something into
 ;; a buffer, you'll always be able to get it back. That is crucial.
-
 (use-package undo-tree
-  :bind (("C-c _" . undo-tree-visualize))
+  :bind (("C-x u" . undo-tree-visualize))
   :config
   (global-undo-tree-mode +1)
   (unbind-key "M-_" undo-tree-map)
@@ -332,7 +302,6 @@
 
 ;; Trying undo-propose, which seems to offer a better experience, as
 ;; undo tree is prone to losing data.
-
 (use-package undo-propose
   :disabled
   :bind (("C-c _" . undo-propose)
@@ -344,12 +313,10 @@
 ;;   (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on))
 
 ;; C stuff.
-
 (use-package cc-mode
   :disabled)
 
 ;; I do all of my writing in either org-mode or markdown-mode.
-
 (use-package markdown-mode
   :mode ("\\.md$" . gfm-mode)
   :config
@@ -364,18 +331,13 @@
          ("C-c l w" . avy-goto-word-1)
          ("C-'"     . ivy-avy)))
 
-(use-package yaml-mode
-  :bind (("C-c a c" . haskell-cabal-visit-file)))
-
 ;; Quickly duplicate whatever's under the cursor. I'm shocked this requires a
 ;; third-party package; it should be standard.
-
 (use-package duplicate-thing
   :bind (("C-c u" . duplicate-thing)))
 
 ;; I can never remember the hierarchies of certain bindings, like C-x v for version control
 ;; stuff. Guide-key helps there. (TODO: figure out other places it'll help.)
-
 (use-package guide-key
   :diminish guide-key-mode
   :config
@@ -386,25 +348,12 @@
                                        "C-c o"
                                        )))
 
-;; Since the in-emacs Dash browser doesn't work on OS X, we have to settle for dash-at-point.
-
-(use-package dash-at-point
-  :bind ("C-c d" . dash-at-point))
-
-;; Need to remember to use this more, though I have my issues with the UI.
-
-(use-package dumb-jump
-  :disabled
-  :bind (("C-c j" . dumb-jump-go-prompt))
-  :config (setq dumb-jump-selector 'ivy))
-
 (use-package elec-pair
   :config
   (add-to-list 'electric-pair-pairs '(?` . ?`))  ; electric-quote backticks
   (add-to-list 'electric-pair-pairs '(?“ . ?”))) ; and curlies
 
 ;; OCaml is loaded not through melpa, but through OPAM itself.
-
 (ignore-errors
   (autoload (expand-file-name "~/.opam/system/share/emacs/site-lisp/tuareg-site-file")))
 
@@ -456,7 +405,6 @@
   :config
 
   ;; TODO: build a real indentation solution
-
   (defun unindent-by-four ()
     (interactive)
     (indent-rigidly (region-beginning) (region-end) -4))
@@ -535,99 +483,6 @@
 
 ;; For Hammerspoon.
 (use-package lua-mode)
-
-;; Haskell is my programming language of choice.
-(use-package haskell-mode
-  :config
-
-  (defun my-haskell-mode-hook ()
-    "Make sure the compile command is right."
-    (setq-local compile-command "stack build --fast"))
-
-  (unbind-key "C-c C-s" haskell-mode-map)
-
-  ;; I don't go overboard with the symbols but they can be nice.
-  (setq haskell-font-lock-symbols 't
-        haskell-font-lock-symbols-alist
-        '(("\\" . "λ")
-          ("<=" . "≤")
-          (">=" . "≥")
-          ("==" . "≡")
-          ("<>" . "♢")
-          ("/=" . "≢")
-          ("*"  . "★")
-          ("<=<" . "<=<")
-;;          ("::" . "∷")
-          ("<+>" . "⍚")
-          ("undefined" . "⊥")
-          ("forall" . "∀")
-          ("." "∘" haskell-font-lock-dot-is-not-composition) ; or '◦'
-          ))
-
-  ;; Unfortunately haskell-mode doesn't quite track the latest and
-  ;; greatest in Haskell extensions, so we have to give the font-lock
-  ;; system a couple of hints.
-
-  (append-to-list haskell-ghc-supported-extensions
-                  '("DerivingVia" "BlockArguments" "DerivingStrategies"))
-
-  (append-to-list haskell-font-lock-keywords '("capi" "via" "stock" "anyclass"))
-
-  (append-to-list haskell-language-extensions
-      '("-XDataKinds"
-        "-XDeriveFoldable"
-        "-XDeriveFunctor"
-        "-XDeriveGeneric"
-        "-XDeriveTraversable"
-        "-XFlexibleContexts"
-        "-XFlexibleInstances"
-        "-XMonadFailDesugaring"
-        "-XMultiParamTypeClasses"
-        "-XOverloadedStrings"
-        "-XRecordWildCards"
-        "-XStandaloneDeriving"
-        "-XStrictData"
-        "-XTypeApplications"))
-
-  :mode ("\\.hs$" . haskell-mode)
-  :hook (haskell-mode . my-haskell-mode-hook)
-
-  :bind (:map haskell-mode-map
-         ("C-c a c" . haskell-cabal-visit-file)
-	 ("C-c a b" . haskell-mode-stylish-buffer)
-         ("C-c a i" . haskell-navigate-imports)
-         ("C-c a a" . haskell-mode-toggle-scc-at-point)
-         ("C-c a w" . stack-watch)))
-
-;; Intero… well, it sort-of works. It generally chokes on large projects,
-;; but for sandboxes and small projects it's the best thing out there
-;; (though I need to try dante-mode, or so joshvera tells me).
-(use-package intero
-  :disabled
-  :after haskell-mode
-  :bind (:map haskell-mode-map
-         ("C-c a r" . intero-repl)
-         ("C-c a j" . intero-goto-definition)
-         ("C-c a n" . intero-info)
-         ("C-c a t" . intero-type-at)
-         ("C-c a u" . intero-uses-at)
-         ("C-c a s" . intero-apply-suggestions)))
-
-(use-package attrap
-  :bind (("C-c q" . attrap-attrap)))
-
-(use-package dante
-  :after haskell-mode
-  :bind (:map haskell-mode-map
-              ("C-c a t" . dante-type-at)
-              ("C-c a n" . dante-info)
-              ("C-c a s" . attrap-attrap)
-              ))
-
-;; Someday I'm going to start using Idris again.
-(use-package idris-mode
-  :disabled
-  :bind (("C-c C-v" . idris-case-split)))
 
 (use-package typescript-mode :defer)
 
@@ -777,29 +632,21 @@
   make-backup-files nil                  ; No backups, thanks.
   auto-save-default nil                  ; Or autosaves. What's the difference between autosaves and backups?
   create-lockfiles nil                   ; Emacs sure loves to put lockfiles everywhere.
-  default-directory "~/src/"             ; My code lives here.
+  default-directory "~/Notes/"           ; All my Notes are here.
   inhibit-startup-screen t               ; No need to see GNU agitprop.
   kill-whole-line t                      ; Lets C-k delete the whole line
-  mac-command-modifier 'super            ; I'm not sure this is the right toggle, but whatever.
   require-final-newline t                ; Auto-insert trailing newlines.
   ring-bell-function 'ignore             ; Do not ding. Ever.
   use-dialog-box nil                     ; Dialogues always go in the modeline.
   frame-title-format "emacs – %b"        ; Put something useful in the status bar.
   initial-scratch-message nil            ; SHUT UP SHUT UP SHUT UP
-  mac-option-modifier 'meta              ; why isn't this the default
   save-interprogram-paste-before-kill t  ; preserve paste to system ring
   enable-recursive-minibuffers t         ; don't fucking freak out if I use the minibuffer twice
   sentence-end-double-space nil          ; are you fucking kidding me with this shit
   confirm-kill-processes nil             ; don't whine at me when I'm quitting.
-  mac-mouse-wheel-smooth-scroll nil      ; no smooth scrolling
-  mac-drawing-use-gcd t                  ; and you can do it on other frames
   mark-even-if-inactive nil              ; prevent really unintuitive undo behavior
-  user-full-name "Patrick Thomson"       ; it me
+  user-full-name "Marcel Fries"       ; it me
   )
-
-;; dired whines at you on macOS unless you do this.
-(when (eq system-type 'darwin)
-  (setq dired-use-ls-dired nil))
 
 (setq-default
   cursor-type 'bar
@@ -810,7 +657,6 @@
 (set-fill-column 95)
 
 ;; Always trim trailing whitespace.
-
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; (setq debug-on-error nil)
@@ -823,10 +669,10 @@
 					 (revert-buffer-function " %b"
 								 ("%b - Dir:  " default-directory)))))))
 
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;; Make org-mode look pretty
+(use-package org-bullets
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-;; Make check lists in org-mode pretty
 (add-hook 'org-mode-hook (lambda ()
    "Beautify Org Checkbox Symbol"
    (push '("[ ]" . "☐") prettify-symbols-alist)

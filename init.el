@@ -304,7 +304,9 @@
 ;; The beauty of undo-tree is that it means that, once you've typed something into
 ;; a buffer, you'll always be able to get it back. That is crucial.
 (use-package undo-tree
-  :bind (("C-x u" . undo-tree-visualize))
+  :bind (("C-x u" . undo-tree-visualize)
+         ("C-z"   . undo-tree-undo)
+         ("C-S-z" . undo-tree-redo))
   :config
   (global-undo-tree-mode +1)
   (unbind-key "M-_" undo-tree-map)
@@ -440,7 +442,6 @@
         org-startup-with-inline-images t
         org-pretty-entities t
         org-ellipsis "…"
-        org-startup-folded nil
         org-footnote-section nil
         org-hide-leading-stars nil
         )
@@ -618,8 +619,6 @@
 (bind-key "s-{"    'previous-buffer)
 (bind-key "s-}"    'next-buffer)
 
-
-(unbind-key "C-z")     ;; I never want to suspend the frame
 (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
 (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
 (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??

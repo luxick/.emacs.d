@@ -58,6 +58,16 @@
  use-package-always-ensure t
  use-package-verbose t)
 
+;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
+(setq w32-pass-lwindow-to-system nil)
+(setq w32-lwindow-modifier 'super) ; Left Windows key
+
+(setq w32-pass-rwindow-to-system nil)
+(setq w32-rwindow-modifier 'super) ; Right Windows key
+
+(setq w32-pass-apps-to-system nil)
+(setq w32-apps-modifier 'hyper) ; Menu/App key
+
 ;; Set the zenburn theme
 ;; TODO
 
@@ -375,7 +385,12 @@
 (defun open-semantic-notes ()
   "Open my notes file."
   (interactive)
-  (find-file "~/Seafile/Notes/Org/semantic.org"))
+  (find-file "~/Notes/semantic.org"))
+
+(defun open-main-todo-file ()
+  "Open The List."
+  (interactive)
+  (find-file "~/Notes/todo.org"))
 
 (use-package org
   ;; Always get this from the GNU archive.
@@ -387,6 +402,7 @@
   ;; are prefixed under C-c o.
   :bind (("C-c o c"  . org-capture)
          ("C-c o n"  . open-semantic-notes)
+         ("C-c o t"  . open-main-todo-file)
          ("C-c o s"  . org-store-link)
          ("C-c o a"  . org-agenda)
          :map org-mode-map
@@ -593,16 +609,15 @@
 (bind-key "s-v"	   'yank)
 (bind-key "s-z"	   'undo)
 (bind-key "s-a"	   'mark-whole-buffer)
-(bind-key "s-<"    'beginning-of-buffer)
+(bind-key "C-<"    'beginning-of-buffer)
 (bind-key "s-x"    'kill-region)
-(bind-key "<home>" 'beginning-of-buffer)
-(bind-key "<end>"  'end-of-buffer)
-(bind-key "s->"    'end-of-buffer)
+(bind-key "C->"    'end-of-buffer)
 (bind-key "M-_"    'em-dash)
 (bind-key "M-;"    'ellipsis)
 (bind-key "C-="    'next-error)
 (bind-key "s-{"    'previous-buffer)
 (bind-key "s-}"    'next-buffer)
+
 
 (unbind-key "C-z")     ;; I never want to suspend the frame
 (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
@@ -672,6 +687,10 @@
 ;; Make org-mode look pretty
 (use-package org-bullets
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(require 'pretty-mode)
+; if you want to set it globally
+(global-pretty-mode t)
 
 (add-hook 'org-mode-hook (lambda ()
    "Beautify Org Checkbox Symbol"

@@ -113,11 +113,10 @@
 
 ;; Disable otiose GUI settings: they just waste space.
 ;; fringe-mode is especially ruinous performance-wise.
-(when (window-system)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tooltip-mode -1)
-  (fringe-mode -1))
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
+(fringe-mode -1)
 
 ;; Haven't figured out how to diminish eldoc-mode outside of
 ;; requiring this explicitly and doing it manually.
@@ -384,6 +383,11 @@
   (interactive)
   (insert "λ"))
 
+(defun open-link-list ()
+  "Open the list of captured links."
+  (interactive)
+  (find-file "~/Notes/links.org"))
+
 (defun open-semantic-notes ()
   "Open my notes file."
   (interactive)
@@ -405,6 +409,7 @@
   :bind (("C-c o c"  . org-capture)
          ("C-c o n"  . open-semantic-notes)
          ("C-c o t"  . open-main-todo-file)
+         ("C-c o l"  . open-link-list)
          ("C-c o s"  . org-store-link)
          ("C-c o a"  . org-agenda)
          :map org-mode-map
@@ -454,7 +459,12 @@
     (interactive)
     (org-emphasize ?~)))
 
-;; Autocomplete for org tags.
+(setq org-capture-templates
+      '(("l" "Link" entry (file "~/Notes/links.org")
+     "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n2:END:\n%i\n")))
+
+
+;; Autocomplete for org tags.3
 (use-package org-ac :after org)
 
 ;; Sometimes useful for putting the right piece of punctuation in there.
@@ -581,6 +591,8 @@
   (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
   (kill-buffer))
 
+;; Define my main key bindings
+
 (bind-key "C-x k"      'kill-buffer-with-prejudice)
 (bind-key "C-c e"      'open-init-file)
 (bind-key "C-c k"      'kill-all-buffers)
@@ -603,8 +615,8 @@
 ;; (bind-key "C-c a P" 'profiler-report)
 
 ;; macOS-style bindings, too (no cua-mode, it's nasty)
-(bind-key "s-+"	   'text-scale-increase)
-(bind-key "s-_"	   'text-scale-decrease)
+(bind-key "C-+"	   'text-scale-increase)
+(bind-key "C--"	   'text-scale-decrease)
 (bind-key "s-s"    'save-buffer)
 (bind-key "s-c"	   'kill-ring-save)
 (bind-key "s-v"	   'yank)
@@ -633,6 +645,7 @@
 (global-hl-line-mode t)              ; Always highlight the current line.
 (show-paren-mode t)                  ; And point out matching parentheses.
 (delete-selection-mode t)            ; Behave like any other sensible text editor would.
+(cua-mode t)                         ; Please let me copy/paste like everyone else.
 (save-place-mode)                    ; Remember where I was
 
 ;; Make sure that ligatures from fonts that offer them are enabled.
@@ -687,9 +700,8 @@
 (use-package org-bullets
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-(require 'pretty-mode)
-; if you want to set it globally
-(global-pretty-mode t)
+(use-package pretty-mode
+  :init (global-pretty-mode t))
 
 (add-hook 'org-mode-hook (lambda ()
    "Beautify Org Checkbox Symbol"

@@ -1,0 +1,179 @@
+* Set up UI
+  Remove all those UI elements. They do not look good and waste space.
+  #+BEGIN_SRC emacs-lisp
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tooltip-mode -1)
+  (fringe-mode -1)
+  #+END_SRC
+
+* Set up package repositories
+** Require package support
+   State that we will need package support and define a macro for adding package repos to the archives
+   #+BEGIN_SRC emacs-lisp
+     (require 'package)
+     (defmacro append-to-list (target suffix)
+      "Append SUFFIX to TARGET in place."
+      `(setq ,target (append ,target ,suffix)))
+   #+END_SRC
+
+** Add package repos
+   #+BEGIN_SRC emacs-lisp
+     (append-to-list package-archives
+                     '(("melpa" . "http://melpa.org/packages/")
+                       ("melpa-stable" . "http://stable.melpa.org/packages/")
+                       ("org-elpa" . "https://orgmode.org/elpa/")))
+   #+END_SRC
+
+** Ensure ~use-package~ command is present
+   #+BEGIN_SRC emacs-lisp
+     (package-initialize)
+
+     (unless (package-installed-p 'use-package)
+       (package-refresh-contents)
+       (package-install 'use-package))
+
+     (require 'use-package)
+
+     (setq
+      use-package-always-ensure t
+      use-package-verbose t)
+   #+END_SRC
+
+* Theming
+** Main Theme
+   #+BEGIN_SRC emacs-lisp
+     (use-package solarized-theme
+       :config
+       (load-theme 'solarized-light t)
+       (let ((line (face-attribute 'mode-line :underline)))
+         (set-face-attribute 'mode-line          nil :overline   line)
+         (set-face-attribute 'mode-line-inactive nil :overline   line)
+         (set-face-attribute 'mode-line-inactive nil :underline  line)
+         (set-face-attribute 'mode-line          nil :box        nil)
+         (set-face-attribute 'mode-line-inactive nil :box        nil)
+         (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
+   #+END_SRC
+
+** Modeline
+   #+BEGIN_SRC emacs-lisp
+     (use-package moody
+       :config
+       (setq x-underline-at-descent-line t)
+       (moody-replace-mode-line-buffer-identification)
+       (moody-replace-vc-mode))
+   #+END_SRC
+
+*** Minions Menu
+    Add a menu to the modeline to access all minor modes.
+    #+BEGIN_SRC emacs-lisp
+      (use-package minions
+        :config (minions-mode 1))
+    #+END_SRC
+
+** Font
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'default nil
+                         :family "Hack"
+                         :height 110
+                         :weight 'normal
+                         :width 'normal)
+   #+END_SRC
+
+* Ivy
+  Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
+** Use Ivy
+   #+BEGIN_SRC emacs-lisp
+    (use-package ivy
+      :ensure t
+      :init
+      (ivy-mode 1)
+      (unbind-key "S-SPC" ivy-minibuffer-map)
+      (setq ivy-height 30
+            ivy-use-virtual-buffers t
+            ivy-use-selectable-prompt t)
+      (defun swiper-at-point ()
+        (interactive)
+        (swiper (thing-at-point 'word)))
+      :bind (("C-x b"   . ivy-switch-buffer)
+             ("C-c C-r" . ivy-resume)
+             ("C-c s"   . swiper-at-point)
+             ("C-s"     . swiper))
+      :diminish)
+
+    ;; ivy-rich makes Ivy look a little bit more like Helm.
+    (use-package ivy-rich
+      :after counsel
+      :custom
+      (ivy-virtual-abbreviate 'full
+       ivy-rich-switch-buffer-align-virtual-buffer t
+       ivy-rich-path-style 'abbrev)
+      :init
+      (ivy-rich-mode))
+
+    (use-package ivy-hydra)
+   #+END_SRC
+
+* Counsel
+  #+BEGIN_SRC emacs-lisp
+    (use-package counsel
+      :ensure t
+      :after ivy
+      :init
+      (counsel-mode 1)
+
+      :bind (("C-c ;" . counsel-M-x)
+             ("C-c U" . counsel-unicode-char)
+             ("C-c i" . counsel-imenu)
+             ("C-x f" . counsel-find-file)
+             ("C-c y" . counsel-yank-pop)
+             ("C-c r" . counsel-recentf)
+             :map ivy-minibuffer-map
+             ("C-r" . counsel-minibuffer-history))
+      :diminish)
+  #+END_SRC
+* Set Variables
+** Default encoding
+   #+BEGIN_SRC emacs-lisp
+     (prefer-coding-system 'utf-8)
+   #+END_SRC
+
+** File loading
+   When loading files, prefer newer versions, if available
+   #+BEGIN_SRC emacs-lisp
+     (setq load-prefer-newer t)
+   #+END_SRC
+
+* Org-mode
+** Templates
+*** Babel
+    Here we set custom templates to be used for structure expansion.
+    These are used when we type "<" folowed by the shortcut for a template and hit "TAB".
+    e.g. "<s TAB" expands to ~#+BEGIN_SRC ?\n\n#+END_SRC~
+
+**** emacs-lisp
+     Shortcut for creating ~emacs-lisp~ code blocks. This is used extensively in this very file.
+     #+BEGIN_SRC emacs-lisp
+       (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+     #+END_SRC
+
+* Useful functions
+** Reformat a whole buffer
+   Reindet the whole buffer with ~F12~
+   #+BEGIN_SRC emacs-lisp
+     (defun indent-buffer ()
+           (interactive)
+           (save-excursion
+             (indent-region (point-min) (point-max) nil)))
+         (global-set-key [f12] 'indent-buffer)
+   #+END_SRC
+
+* Load ~custom.el~
+  Load a custom file from the emacs home dir.
+  This file is specific to the maschine emacs runs on.
+  It conatins customizations and file locations that are maschine dependend.
+  #+BEGIN_SRC emacs-lisp
+    (setq custom-file "~/.emacs.d/custom.el")
+    (load custom-file 'noerror)
+  #+END_SRC

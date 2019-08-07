@@ -1,62 +1,12 @@
-;; init.el -- Patrick Thomson's emacs config. -*- lexical-binding: t; -*-
+;; init.el -- Marcel Fries <mfries@luxick.de>
 
-;;; Commentary:
-;; This file is in the public domain.
-;;
-;; If you want to give this file a try, you can just drop it into
-;; ~/.emacs.d: it downloads everything it needs. It is also relatively
-;; fast to start up (once it's downloaded all the required packages),
-;; as it endeavours to load packages lazily when possible.
-;;
-;; A general note on keybindings: the custom keybindings applicable to
-;; all major modes appear with the C-c prefix, as is standard.
-;; Per-language commands appear with the C-c a prefix. The most
-;; important keybinding, C-;, provides counsel-M-x, which lets you
-;; fuzzy-find through the space of available functions. Exploring
-;; counsel-M-x is the best way to become familiar with the space of
-;; extensible functions, which is a sine qua non for being comfortable
-;; with Emacs.
+;; Configure emacs in a literate style from an org file.
+;; The file sould be named "setup-emacs.org". It should be located in your ".emacs.d" directory.
+;; Source at https://git.sr.ht/~luxick/emacs-config
 
-;;; Code:
-
-;; To start, we adjust the garbage collection param
-
-(setq gc-cons-threshold 32000000     ;; 32 MB
-      garbage-collection-messages t) ;; indicator of thrashing
-
-;; Bump up the recursion limit.
-(setq max-lisp-eval-depth 2000)
-
-;; Package-initialization preamble, adding melpa and melpa-stable.
-
-(require 'package)
-
-(defmacro append-to-list (target suffix)
-  "Append SUFFIX to TARGET in place."
-  `(setq ,target (append ,target ,suffix)))
-
-(append-to-list package-archives
-                '(("melpa" . "http://melpa.org/packages/")
-                  ("melpa-stable" . "http://stable.melpa.org/packages/")
-                  ("org-elpa" . "https://orgmode.org/elpa/")))
-
-(package-initialize)
-
-;; Ensure use-package is present. From here on out, all packages are loaded
-;; with use-package.
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;; Allow navigation between use-package stanzas with iMenu.
-(setq-default use-package-enable-imenu-support t)
-
-(require 'use-package)
-
-(setq
- use-package-always-ensure t
- use-package-verbose t)
+(require 'org)
+(org-babel-load-file
+ (expand-file-name (concat user-emacs-directory "setup-emacs.org")))
 
 ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
 (setq w32-pass-lwindow-to-system nil)
@@ -68,62 +18,6 @@
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper) ; Menu/App key
 
-;; Set the zenburn theme
-;; TODO
-
-(use-package solarized-theme
-  :config
-  (load-theme 'solarized-light t)
-  (let ((line (face-attribute 'mode-line :underline)))
-    (set-face-attribute 'mode-line          nil :overline   line)
-    (set-face-attribute 'mode-line-inactive nil :overline   line)
-    (set-face-attribute 'mode-line-inactive nil :underline  line)
-    (set-face-attribute 'mode-line          nil :box        nil)
-    (set-face-attribute 'mode-line-inactive nil :box        nil)
-    (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
-
-
-;; Use moody modeline
-(use-package moody
-  :config
-  (setq x-underline-at-descent-line t)
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode))
-
-;; Minions to add a menu with minor modes to the modeline
-(use-package minions
-  :config (minions-mode 1))
-
-;; UTF-8 everywhere, please.
-(prefer-coding-system 'utf-8)
-
-(set-face-attribute 'default nil
-                    :family "Hack"
-                    :height 110
-                    :weight 'normal
-                    :width 'normal)
-
-;; Any Customize-based settings should live in custom.el, not here.
-
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
-
-;; Always prefer newer files.
-(setq load-prefer-newer t)
-
-;; Disable otiose GUI settings: they just waste space.
-;; fringe-mode is especially ruinous performance-wise.
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(fringe-mode -1)
-
-;; Haven't figured out how to diminish eldoc-mode outside of
-;; requiring this explicitly and doing it manually.
-(use-package diminish
-  :ensure t)
-
-(diminish 'eldoc-mode)
 
 (use-package all-the-icons)
 
@@ -137,124 +31,9 @@
   (add-to-list 'recentf-exclude "\\.emacs.d")
   (add-to-list 'recentf-exclude ".+tmp......\\.org"))
 
-;; Ivy makes most minibuffer prompts sortable and filterable. I used
-;; to use helm, but it was too slow. Unfortunately org-ref depends on
-;; it, but I never load it, so we good.
-(use-package ivy
-  :ensure t
-  :init
-  (ivy-mode 1)
-  (unbind-key "S-SPC" ivy-minibuffer-map)
-  (setq ivy-height 30
-        ivy-use-virtual-buffers t
-        ivy-use-selectable-prompt t)
-  (defun swiper-at-point ()
-    (interactive)
-    (swiper (thing-at-point 'word)))
-  :bind (("C-x b"   . ivy-switch-buffer)
-         ("C-c C-r" . ivy-resume)
-         ("C-c s"   . swiper-at-point)
-         ("C-s"     . swiper))
-  :diminish)
-
-;; ivy-rich makes Ivy look a little bit more like Helm.
-(use-package ivy-rich
-  :after counsel
-  :custom
-  (ivy-virtual-abbreviate 'full
-   ivy-rich-switch-buffer-align-virtual-buffer t
-   ivy-rich-path-style 'abbrev)
-  :init
-  (ivy-rich-mode))
-
-(use-package ivy-hydra)
-
-;; Slurp environment variables from the shell.
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
-
-(use-package fish-mode)
-
 (use-package gnu-elpa-keyring-update)
 
-;; Counsel applies Ivy-like behavior to other builtin features of
-;; emacs, e.g. search.
-(use-package counsel
-  :ensure t
-  :after ivy
-  :init
-  (counsel-mode 1)
-
-  :bind (("C-c ;" . counsel-M-x)
-         ("C-c U" . counsel-unicode-char)
-         ("C-c i" . counsel-imenu)
-         ("C-x f" . counsel-find-file)
-         ("C-c y" . counsel-yank-pop)
-	 ("C-c r" . counsel-recentf)
-         :map ivy-minibuffer-map
-         ("C-r" . counsel-minibuffer-history))
-  :diminish)
-
-;; Deadgrep is amazing.
-(use-package deadgrep
-  :bind (("C-c h" . deadgrep)))
-
-;; projectile comes with Emacs these days, but we want to enable
-;; caching, since I work on big projects.
-(use-package projectile
-  :bind (("C-c f" . projectile-find-file))
-  :config
-  (setq projectile-enable-caching t
-        projectile-completion-system 'ivy)
-  :diminish)
-
-;; Counsel and projectile should work together.
-(use-package counsel-projectile
-  :bind (("C-c f" . counsel-projectile))
-  :init
-  (counsel-projectile-mode))
-
-;; Sort commands by recency in ivy windows.
-(use-package smex)
-
-;; Keychain stuff. Note to self: if you keep having to enter your
-;; keychain password on OS X, make sure that you have the following in .ssh/config:
-;; Host *
-;;    UseKeychain yes
-(use-package keychain-environment
-  :config
-  (keychain-refresh-environment))
-
-;; Elm stuff.
-(use-package elm-mode
-  :disabled)
-
-;; Company is the best Emacs completion system.
-(use-package company
-  :bind (("C-." . company-complete))
-  :diminish company-mode
-  :custom
-  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
-  (company-show-numbers t "Numbers are helpful.")
-  (company-tooltip-limit 20 "The more the merrier.")
-  (company-abort-manual-when-too-short t "Be less enthusiastic about completion.")
-  :config
-  (global-company-mode)
-
-  ;; use numbers 0-9 to select company completion candidates
-  (let ((map company-active-map))
-    (mapc (lambda (x) (define-key map (format "%d" x)
-                        `(lambda () (interactive) (company-complete-number ,x))))
-          (number-sequence 0 9))))
-
-;; Textmate-style tap-to-expand-into-the-current-delimiter.
-
-(use-package expand-region
-  :bind (("C-c n" . er/expand-region)))
-
 ;; Magit is one of the best pieces of OSS I have ever used. It is truly esssential.
-
 (use-package magit
   :bind (("C-c g" . magit-status))
   :diminish magit-auto-revert-mode
@@ -284,11 +63,6 @@
   (yas-global-mode 1)
   (setq yas-prompt-functions '(yas-completing-prompt))
   :diminish yas-minor-mode)
-
-;; I usually don't edit very large files, but saveplace is nice on the occasions I do.
-(use-package saveplace
-  :disabled
-  :config (setq-default save-place t))
 
 ;; Haskell and Elisp are made a lot easier when delimiters are nicely color-coded.
 (use-package rainbow-delimiters
@@ -334,14 +108,6 @@
   (when (executable-find "pandoc")
     (setq markdown-command "pandoc -f markdown -t html")))
 
-;; Avy is better than ace-jump.
-(use-package avy
-  :defer ivy
-  :bind (("C-c l l" . avy-goto-line)
-         ("C-c l c" . avy-goto-char-timer)
-         ("C-c l w" . avy-goto-word-1)
-         ("C-'"     . ivy-avy)))
-
 ;; Quickly duplicate whatever's under the cursor. I'm shocked this requires a
 ;; third-party package; it should be standard.
 (use-package duplicate-thing
@@ -358,15 +124,6 @@
                                        "C-c l" ;; line-jumping
                                        "C-c o"
                                        )))
-
-(use-package elec-pair
-  :config
-  (add-to-list 'electric-pair-pairs '(?` . ?`))  ; electric-quote backticks
-  (add-to-list 'electric-pair-pairs '(?“ . ?”))) ; and curlies
-
-;; OCaml is loaded not through melpa, but through OPAM itself.
-(ignore-errors
-  (autoload (expand-file-name "~/.opam/system/share/emacs/site-lisp/tuareg-site-file")))
 
 (defun em-dash ()
   "Insert an em-dash."
@@ -464,60 +221,6 @@
      "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")))
 
 
-;; Autocomplete for org tags.3
-(use-package org-ac :after org)
-
-;; Sometimes useful for putting the right piece of punctuation in there.
-(use-package typo)
-
-;; Reference management disabled for org-ref until I figure out what its deal is.
-(use-package org-ref
-  :disabled
-  :defer
-  :config
-  (ignore-errors (load-private-settings)))
-
-(use-package go-mode
-  :init
-  (defun my-go-mode-hook ()
-    (add-hook 'before-save-hook #'gofmt-before-save))
-
-  :hook (go-mode . my-go-mode-hook))
-
-;; Flycheck mode is usually useful.
-(use-package flycheck
-  :hook (org-mode . flycheck-mode)
-  :config
-  (setq-default flycheck-ghc-args
-                '( "-XDataKinds"
-                   "-XDeriveFoldable"
-                   "-XDeriveFunctor"
-                   "-XDeriveGeneric"
-                   "-XDeriveTraversable"
-                   "-XFlexibleContexts"
-                   "-XFlexibleInstances"
-                   "-XMonadFailDesugaring"
-                   "-XMultiParamTypeClasses"
-                   "-XOverloadedStrings"
-                   "-XRecordWildCards"
-                   "-XStandaloneDeriving"
-                   "-XTypeApplications"
-                 ))
-
-
-  (global-flycheck-mode)
-  (add-to-list 'flycheck-checkers 'proselint))
-
-;; For Hammerspoon.
-(use-package lua-mode)
-
-(use-package typescript-mode :defer)
-
-(use-package protobuf-mode)
-
-(use-package dtrace-script-mode)
-
-(use-package rust-mode)
 
 (defun my-elisp-mode-hook ()
   "My elisp customizations."

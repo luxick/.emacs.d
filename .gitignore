@@ -21,3 +21,4 @@ icons
 transient
 .cache
 server
+setup-emacs.el

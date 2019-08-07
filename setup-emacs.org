@@ -1,3 +1,4 @@
+#+TITLE: Emacs Configuration
 * Set up UI
   Remove all those UI elements. They do not look good and waste space.
   #+BEGIN_SRC emacs-lisp
@@ -114,7 +115,11 @@
 
     (use-package ivy-hydra)
    #+END_SRC
-
+** Smex
+   Sort commands by recency in ivy windows
+   #+BEGIN_SRC emacs-lisp
+     (use-package smex)
+   #+END_SRC
 * Counsel
   #+BEGIN_SRC emacs-lisp
     (use-package counsel

@@ -8,6 +8,16 @@
 (org-babel-load-file
  (expand-file-name (concat user-emacs-directory "setup-emacs.org")))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; MOVE THIS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Slurp environment variables from the shell.
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
+
 ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
 (setq w32-pass-lwindow-to-system nil)
 (setq w32-lwindow-modifier 'super) ; Left Windows key
@@ -230,11 +240,6 @@
 
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 
-(defun open-init-file ()
-  "Open this very file."
-  (interactive)
-  (find-file user-init-file))
-
 (defun kill-all-buffers ()
   "Close all buffers."
   (interactive)
@@ -303,7 +308,6 @@
 ;; Define my main key bindings
 
 (bind-key "C-x k"      'kill-buffer-with-prejudice)
-(bind-key "C-c e"      'open-init-file)
 (bind-key "C-c k"      'kill-all-buffers)
 (bind-key "s-<return>" 'eol-then-newline)
 (bind-key "C-c 5"      'query-replace-regexp) ;; stupid vestigial binding
@@ -317,28 +321,10 @@
 (bind-key "C-c /"      'comment-or-uncomment-region)
 (bind-key "C-c x"      'ESC-prefix)
 (bind-key "M-i"        'delete-indentation)
-
-;; When tracking down slowness, opening ivy to start these functions
-;; throws off the traces.
-;; (bind-key "C-c a p" 'profiler-start)
-;; (bind-key "C-c a P" 'profiler-report)
-
-;; macOS-style bindings, too (no cua-mode, it's nasty)
 (bind-key "C-+"	   'text-scale-increase)
 (bind-key "C--"	   'text-scale-decrease)
-(bind-key "s-s"    'save-buffer)
-(bind-key "s-c"	   'kill-ring-save)
-(bind-key "s-v"	   'yank)
-(bind-key "s-z"	   'undo)
-(bind-key "s-a"	   'mark-whole-buffer)
 (bind-key "C-<"    'beginning-of-buffer)
-(bind-key "s-x"    'kill-region)
 (bind-key "C->"    'end-of-buffer)
-(bind-key "M-_"    'em-dash)
-(bind-key "M-;"    'ellipsis)
-(bind-key "C-="    'next-error)
-(bind-key "s-{"    'previous-buffer)
-(bind-key "s-}"    'next-buffer)
 
 (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
 (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever

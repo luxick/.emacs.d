@@ -117,6 +117,8 @@
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (fringe-mode -1)
+(menu-bar-mode -1)
+
 
 ;; Haven't figured out how to diminish eldoc-mode outside of
 ;; requiring this explicitly and doing it manually.
@@ -461,7 +463,7 @@
 
 (setq org-capture-templates
       '(("l" "Link" entry (file "~/Notes/links.org")
-     "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n2:END:\n%i\n")))
+     "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n2:END:\n%i\n")))
 
 
 ;; Autocomplete for org tags.3

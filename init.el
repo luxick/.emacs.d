@@ -117,8 +117,6 @@
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (fringe-mode -1)
-(menu-bar-mode -1)
-
 
 ;; Haven't figured out how to diminish eldoc-mode outside of
 ;; requiring this explicitly and doing it manually.
@@ -463,7 +461,7 @@
 
 (setq org-capture-templates
       '(("l" "Link" entry (file "~/Notes/links.org")
-     "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n2:END:\n%i\n")))
+     "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")))
 
 
 ;; Autocomplete for org tags.3
@@ -547,6 +545,12 @@
   (split-window-right)
   (other-window 1))
 
+(defun split-below-and-enter ()
+  "Split the window to the right and enter it."
+  (interactive)
+  (split-window-below)
+  (other-window 1))
+
 (defun switch-to-previous-buffer ()
   "Switch to previously open buffer.  Repeated invocations toggle between the two most recently open buffers."
   (interactive)
@@ -601,14 +605,14 @@
 (bind-key "s-<return>" 'eol-then-newline)
 (bind-key "C-c 5"      'query-replace-regexp) ;; stupid vestigial binding
 (bind-key "M-/"        'hippie-expand)
-(bind-key "C-c '"      'switch-to-previous-buffer)
 (bind-key "C-c \\"     'align-regexp)
 (bind-key "C-c m"      'compile)
 (bind-key "C-c 3"      'split-right-and-enter)
+(bind-key "C-c 2"      'split-below-and-enter)
+(bind-key "C-c p"      'switch-to-previous-buffer)
+(bind-key "M-p"        'ace-window)
 (bind-key "C-c /"      'comment-or-uncomment-region)
 (bind-key "C-c x"      'ESC-prefix)
-(bind-key "C-,"        'other-window)
-(bind-key "M-,"        'other-window)
 (bind-key "M-i"        'delete-indentation)
 
 ;; When tracking down slowness, opening ivy to start these functions
@@ -769,6 +773,23 @@
                  nil)
             (message "Set custom style from %s" f))
         (message "Custom header file %s doesnt exist")))))
+
+;; Remove the brackets around timestamps in org-mode exports
+(add-to-list 'org-export-filter-timestamp-functions
+             #'endless/filter-timestamp)
+(defun endless/filter-timestamp (trans back _comm)
+  "Remove <> around time-stamps."
+  (pcase back
+    ((or `jekyll `html)
+     (replace-regexp-in-string "&[lg]t;" "" trans))
+    (`latex
+     (replace-regexp-in-string "[<>]" "" trans))))
+
+(setq-default org-display-custom-times t)
+;;; Before you ask: No, removing the <> here doesn't work.
+(setq org-time-stamp-custom-formats
+      '("<%a %d.%m.%Y>" . "<%d.%m.%y %H:%M>"))
+
 ;; goodbye, thanks for reading
 
 (provide 'init)

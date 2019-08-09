@@ -1,4 +1,5 @@
 #+TITLE: Emacs Configuration
+This is my configuration for the emacs editor.
 * Set up UI
   Remove all those UI elements. They do not look good and waste space.
   #+BEGIN_SRC emacs-lisp
@@ -40,6 +41,54 @@
      (setq
       use-package-always-ensure t
       use-package-verbose t)
+
+      (use-package gnu-elpa-keyring-update)
+   #+END_SRC
+
+* Set Backup Location
+  Emacs, by default clutters the file system with backup files.
+  We do not want them to be right next to the actual file, so we tell emacs to use dedicated directory to store them.
+  While we are at it, we also set rule for how many version emacs should keep as backups.
+  #+BEGIN_SRC emacs-lisp
+    (setq backup-directory-alist `(("." . "~/.emacs-backup")))
+    (setq backup-by-copying t)
+    (setq delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
+  #+END_SRC
+* Define useful functions
+** Reformat a whole buffer
+   Reindet the whole buffer with ~F12~
+   #+BEGIN_SRC emacs-lisp
+     (defun indent-buffer ()
+           (interactive)
+           (save-excursion
+             (indent-region (point-min) (point-max) nil)))
+         (global-set-key [f12] 'indent-buffer)
+   #+END_SRC
+
+** Split windows and  immediately switch to it
+   #+BEGIN_SRC emacs-lisp
+     (defun split-right-and-enter ()
+       "Split the window to the right and enter it."
+       (interactive)
+       (split-window-right)
+       (other-window 1))
+
+     (defun split-below-and-enter ()
+       "Split the window down and enter it."
+       (interactive)
+       (split-window-below)
+       (other-window 1))
+   #+END_SRC
+
+** Quick buffer switching
+   #+BEGIN_SRC emacs-lisp
+     (defun switch-to-previous-buffer ()
+       "Switch to previously open buffer.  Repeated invocations toggle between the two most recently open buffers."
+       (interactive)
+       (switch-to-buffer (other-buffer (current-buffer) 1)))
    #+END_SRC
 
 * Theming
@@ -138,19 +187,263 @@
              ("C-r" . counsel-minibuffer-history))
       :diminish)
   #+END_SRC
-* Set Variables
-** Default encoding
+* Undo Tree
+  Using the beauty that is undo-tree, we can easily navigate through history of a buffer.
+  This includes obviously going back in edit history, but also branching of end returning to previous states.
+  #+BEGIN_SRC emacs-lisp
+    (use-package undo-tree
+      :bind (("C-x u" . undo-tree-visualize)
+             ("C-z"   . undo-tree-undo)
+             ("C-S-z" . undo-tree-redo))
+      :config
+      (global-undo-tree-mode +1)
+      (unbind-key "M-_" undo-tree-map)
+      :diminish)
+
+    ;; Trying undo-propose, which seems to offer a better experience, as
+    ;; undo tree is prone to losing data.
+    (use-package undo-propose
+      :disabled
+      :bind (("C-c _" . undo-propose)
+             :map undo-propose-mode-map
+             ("<up>" . undo-only)))
+  #+END_SRC
+  With this we can use ~C-x u~ in any buffer to bring up the tree and navigate it using the arrow key.
+  Once in a state we agree with, just press ~q~ and we are done.
+
+* Magit
+  Magit is THE go to package for using git in emacs.
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :bind (("C-c g" . magit-status))
+      :diminish magit-auto-revert-mode
+      :diminish auto-revert-mode
+      :custom
+      (magit-remote-set-if-missing t)
+      (magit-diff-refine-hunk t)
+      :config
+      (magit-auto-revert-mode t)
+      (advice-add 'magit-refresh :before #'maybe-unset-buffer-modified)
+      (advice-add 'magit-commit  :before #'maybe-unset-buffer-modified)
+      (setq magit-completing-read-function 'ivy-completing-read)
+      (add-to-list 'magit-no-confirm 'stage-all-changes))
+
+    (use-package libgit
+      :disabled
+      :after magit)
+  #+END_SRC
+  The ~advice-add~ entries are thereto stop magit from bugging us to save buffers when commiting and refreshing.
+
+** Helper Functions
    #+BEGIN_SRC emacs-lisp
-     (prefer-coding-system 'utf-8)
+     (autoload 'diff-no-select "diff")
+     (defun current-buffer-matches-file-p ()
+       "Return t if the current buffer is identical to its associated file."
+       (when (and buffer-file-name (buffer-modified-p))
+         (diff-no-select buffer-file-name (current-buffer) nil 'noasync)
+         (with-current-buffer "*Diff*"
+           (and (search-forward-regexp "^Diff finished \(no differences\)\." (point-max) 'noerror) t))))
    #+END_SRC
 
-** File loading
-   When loading files, prefer newer versions, if available
+   Clear modified bit on all unmodified buffers
    #+BEGIN_SRC emacs-lisp
-     (setq load-prefer-newer t)
+     (defun maybe-unset-buffer-modified (&optional _)
+       (interactive)
+       (dolist (buf (buffer-list))
+         (with-current-buffer buf
+           (when (and buffer-file-name (buffer-modified-p) (current-buffer-matches-file-p))
+             (set-buffer-modified-p nil)))))
+
    #+END_SRC
 
-* Org-mode
+   Don't prompt to save unmodified buffers on exit.
+   #+BEGIN_SRC emacs-lisp
+     (advice-add 'save-buffers-kill-emacs :before #'maybe-unset-buffer-modified)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun kill-buffer-with-prejudice (&optional _)
+       "Kill a buffer, eliding the save dialogue if there are no diffs."
+       (interactive)
+       (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
+       (kill-buffer))
+   #+END_SRC
+
+* Org Mode
+** Define important files
+*** The Link Dump
+    I use a single file to dump all links I plan on viewing later.
+    #+BEGIN_SRC emacs-lisp
+      (defun open-link-list ()
+        (interactive)
+        (find-file "~/Notes/links.org"))
+    #+END_SRC
+
+*** The Quick Note File
+    This file serves as a notepad for wirting down all sorts of things that have not yet been refiled.
+    #+BEGIN_SRC emacs-lisp
+      (defun open-semantic-notes ()
+        (interactive)
+        (find-file "~/Notes/semantic.org"))
+    #+END_SRC
+
+*** The TODO File
+    This file will track the bulk of all todo items we will enter.
+    #+BEGIN_SRC emacs-lisp
+      (defun open-main-todo-file ()
+        (interactive)
+        (find-file "~/Notes/todo.org"))
+    #+END_SRC
+
+** Configure org-mode
+   This is the main configuration for the infamous org-mode.
+   The most important parts are configuring key bindings to quickly access the files we have defined above.
+   #+BEGIN_SRC emacs-lisp
+    (use-package org
+      ;; Always get this from the GNU archive.
+      :pin gnu
+      :diminish org-indent-mode
+      :bind (("C-c o c"  . org-capture)
+             ("C-c o n"  . open-semantic-notes)
+             ("C-c o t"  . open-main-todo-file)
+             ("C-c o l"  . open-link-list)
+             ("C-c o s"  . org-store-link)
+             ("C-c o a"  . org-agenda)
+             :map org-mode-map
+             ("M-s-<return>" . org-insert-todo-heading)
+             ("C-c c"    . org-mode-insert-code)
+             ("C-c a s"  . org-emphasize)
+             ("C-c a r"  . org-ref)
+             ("C-c a e"  . outline-show-all)
+             ("C-c a t"  . unindent-by-four))
+      :hook (org-mode . visual-line-mode)
+      :config
+
+      (let ((todo-path (expand-file-name "~/Notes/todo.org")))
+        (when (file-exists-p todo-path)
+          (setq org-agenda-files (list todo-path)
+                org-default-notes-file todo-path)))
+
+      (setq org-footnote-section ""
+            org-startup-with-inline-images t
+            org-pretty-entities t
+            org-ellipsis "…"
+            org-footnote-section nil
+            org-hide-leading-stars nil
+            )
+      (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
+
+      (defun org-mode-insert-code ()
+        (interactive)
+        (org-emphasize ?~)))
+   #+END_SRC
+
+** Beautify org-mode
+*** Icons for headline indentation
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+   #+END_SRC
+
+*** Replace checkmark with unicode icons
+    #+BEGIN_SRC emacs-lisp
+      (use-package pretty-mode
+        :init (global-pretty-mode t))
+
+      (add-hook 'org-mode-hook (lambda ()
+         "Beautify Org Checkbox Symbol"
+         (push '("[ ]" . "☐") prettify-symbols-alist)
+         (push '("[X]" . "☑" ) prettify-symbols-alist)
+         (push '("[-]" . "❍" ) prettify-symbols-alist)
+         (prettify-symbols-mode)))
+    #+END_SRC
+
+*** Strike out done ckeckbox items
+    #+BEGIN_SRC emacs-lisp
+      (defface org-checkbox-done-text
+        '((t (:foreground "#71696A" :strike-through t)))
+        "Face for the text part of a checked org-mode checkbox.")
+
+      (font-lock-add-keywords
+       'org-mode
+       `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
+          1 'org-checkbox-done-text prepend))
+       'append)
+    #+END_SRC
+
+** CSS Themes for Exports
+   When exporting from org-mode (usually to HTML) we want to specify additional styles.
+   #+BEGIN_SRC emacs-lisp
+     (defvar org-theme-css-dir "~/.emacs.d/org-css/")
+   #+END_SRC
+
+   Pack some ~.css~ files into this directory. They will be available for choosing when exporting.
+   The folowing code will define a function to inline css into a self-contained html file.
+
+   To use it type ~M-x toggle-org-custom-inline-style~ into an org-mode buffer.
+   When exporting to HTML emacs will ask which css theme to use.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun toggle-org-custom-inline-style ()
+       (interactive)
+       (let ((hook 'org-export-before-parsing-hook)
+             (fun 'set-org-html-style))
+         (if (memq fun (eval hook))
+             (progn
+               (remove-hook hook fun 'buffer-local)
+               (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
+           (add-hook hook fun nil 'buffer-local)
+           (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
+
+     (defun org-theme ()
+       (interactive)
+       (let* ((cssdir org-theme-css-dir)
+              (css-choices (directory-files cssdir nil ".css$"))
+              (css (completing-read "theme: " css-choices nil t)))
+         (concat cssdir css)))
+
+     (defun set-org-html-style (&optional backend)
+       (interactive)
+       (when (or (null backend) (eq backend 'html))
+         (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
+           (if (file-exists-p f)
+               (progn
+                 (set (make-local-variable 'org-theme-css) f)
+                 (set (make-local-variable 'org-html-head)
+                      (with-temp-buffer
+                        (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
+                        (insert-file-contents f)
+                        (goto-char (point-max))
+                        (insert "\n/*]]>*/-->\n</style>\n")
+                        (buffer-string)))
+                 (set (make-local-variable 'org-html-head-include-default-style)
+                      nil)
+                 (message "Set custom style from %s" f))
+             (message "Custom header file %s doesnt exist")))))
+   #+END_SRC
+
+** Prettier Timestamps in Exports
+   The default timestamps look pretty unintuitive, with all the angle brackets and all. Let's make them look better.
+   #+BEGIN_SRC emacs-lisp
+     ;;(add-to-list 'org-export-filter-timestamp-functions
+     ;;             #'endless/filter-timestamp)
+     ;;(defun endless/filter-timestamp (trans back _comm)
+     ;; (pcase back
+     ;;    ((or `jekyll `html)
+     ;;     (replace-regexp-in-string "&[lg]t;" "" trans))
+     ;;    (`latex
+     ;;     (replace-regexp-in-string "[<>]" "" trans))))
+   #+END_SRC
+   Removed for now, this somehow breaks emacs
+
+   OK, no more brackets. Now for a better formatted display.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default org-display-custom-times t)
+     (setq org-time-stamp-custom-formats
+           '("<%a %d.%m.%Y>" . "<%d.%m.%y %H:%M>"))
+   #+END_SRC
+
 ** Templates
 *** Babel
     Here we set custom templates to be used for structure expansion.
@@ -163,15 +456,201 @@
        (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
      #+END_SRC
 
-* Useful functions
-** Reformat a whole buffer
-   Reindet the whole buffer with ~F12~
+*** Org Capture
+    Here we define templates we want to use to quickly capture stuff and automatically file them away.
+    #+BEGIN_SRC emacs-lisp
+      (setq org-capture-templates
+            '(("l" "Link" entry (file "~/Notes/links.org")
+           "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")))
+    #+END_SRC
+
+* Additional Package Imports
+** All The Icons
+   We want to have some nice looking icons
    #+BEGIN_SRC emacs-lisp
-     (defun indent-buffer ()
-           (interactive)
-           (save-excursion
-             (indent-region (point-min) (point-max) nil)))
-         (global-set-key [f12] 'indent-buffer)
+    (use-package all-the-icons)
+   #+END_SRC
+
+** Recentf
+   Show recent files in the buffer selection
+   #+BEGIN_SRC emacs-lisp
+    (use-package recentf
+      :init (recentf-mode t)
+      :config
+      (add-to-list 'recentf-exclude "\\.emacs.d")
+      (add-to-list 'recentf-exclude ".+tmp......\\.org"))
+   #+END_SRC
+
+** Rainbow Delimiters
+   We want to have some nicely colored delimiters when reading and writing lisp code
+   #+BEGIN_SRC emacs-lisp
+    (use-package rainbow-delimiters
+      :disabled
+      :hook (prog-mode . rainbow-delimiters-mode))
+   #+END_SRC
+
+** Markdown Mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package markdown-mode
+       :mode ("\\.md$" . gfm-mode)
+       :config
+       (when (executable-find "pandoc")
+         (setq markdown-command "pandoc -f markdown -t html")))
+   #+END_SRC
+
+** Duplicate Thing
+   Quick bind to ~C-c u ~ to duplicate the current line
+   #+BEGIN_SRC emacs-lisp
+     (use-package duplicate-thing
+       :bind (("C-c u" . duplicate-thing)))
+   #+END_SRC
+
+** Guide Key
+   Use this to get some help with key bindings
+   #+BEGIN_SRC emacs-lisp
+     (use-package guide-key
+       :diminish guide-key-mode
+       :config
+       (guide-key-mode t)
+       (setq guide-key/guide-key-sequence '("C-x v" ;; version control
+                                            "C-c a" ;; my mode-specific bindings
+                                            "C-c l" ;; line-jumping
+                                            "C-c o"
+                                            )))
+   #+END_SRC
+* Set Variables
+** General Emacs Options
+   #+BEGIN_SRC emacs-lisp
+     (setq
+       compilation-always-kill t                ; Never prompt to kill a compilation session.
+       compilation-scroll-output 'first-error   ; Always scroll to the bottom.
+       make-backup-files nil                    ; No backups, thanks.
+       auto-save-default nil                    ; Or autosaves. What's the difference between autosaves and backups?
+       create-lockfiles nil                     ; Emacs sure loves to put lockfiles everywhere.
+       default-directory "~/Notes/"             ; All my Notes are here.
+       inhibit-startup-screen t                 ; No need to see GNU agitprop.
+       kill-whole-line t                        ; Lets C-k delete the whole line
+       require-final-newline t                  ; Auto-insert trailing newlines.
+       ring-bell-function 'ignore               ; Do not ding. Ever.
+       use-dialog-box nil                       ; Dialogues always go in the modeline.
+       initial-scratch-message nil              ; SHUT UP SHUT UP SHUT UP
+       save-interprogram-paste-before-kill t    ; preserve paste to system ring
+       enable-recursive-minibuffers t           ; don't fucking freak out if I use the minibuffer twice
+       sentence-end-double-space nil            ; are you fucking kidding me with this shit
+       confirm-kill-processes nil               ; don't whine at me when I'm quitting.
+       mark-even-if-inactive nil                ; prevent really unintuitive undo behavior
+       load-prefer-newer t                      ; load newest file version available
+       user-full-name "Marcel Fries"            ; it's me
+       )
+   #+END_SRC
+
+** Read environment variables from the shell
+   #+BEGIN_SRC emacs-lisp
+     (use-package exec-path-from-shell
+       :config
+       (exec-path-from-shell-initialize))
+   #+END_SRC
+** Show the current filename in titlebar
+   #+BEGIN_SRC emacs-lisp
+     (setq-default frame-title-format
+                   (list '((buffer-file-name " %f"
+                                             (dired-directory
+                                              dired-directory
+                                              (revert-buffer-function " %b"
+                                                                      ("%b - Dir:  " default-directory)))))))
+   #+END_SRC
+
+** Default encoding
+   #+BEGIN_SRC emacs-lisp
+     (prefer-coding-system 'utf-8)
+   #+END_SRC
+
+** Shorten "yes or no" questions
+   #+BEGIN_SRC emacs-lisp
+     (defalias 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+** Always highlight the current line
+   #+BEGIN_SRC emacs-lisp
+   (global-hl-line-mode t)
+   #+END_SRC
+
+** Always highlight matching braces
+   #+BEGIN_SRC emacs-lisp
+   (show-paren-mode t)
+   #+END_SRC
+
+** Allow selection override
+   #+BEGIN_SRC emacs-lisp
+   (delete-selection-mode t)
+   #+END_SRC
+
+** Behave like a normal text editor
+   #+BEGIN_SRC emacs-lisp
+   (cua-mode t)
+   #+END_SRC
+
+** Remember where we are
+   #+BEGIN_SRC emacs-lisp
+   (save-place-mode)
+   #+END_SRC
+
+** Set cursor and indet mode
+   #+BEGIN_SRC emacs-lisp
+     (setq-default
+       cursor-type 'bar
+       indent-tabs-mode nil
+       cursor-in-non-selected-windows nil)
+   #+END_SRC
+
+** Set default column width
+   #+BEGIN_SRC emacs-lisp
+   (set-fill-column 95)
+   #+END_SRC
+* Hooks
+** Remove trailing whitespace on file  close
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'before-save-hook 'delete-trailing-whitespace)
+   #+END_SRC
+** Elisp
+   Some customization for writing elisp
+   #+BEGIN_SRC emacs-lisp
+     (defun my-elisp-mode-hook ()
+       "My elisp customizations."
+       (electric-pair-mode 1)
+       (add-hook 'before-save-hook 'check-parens nil t)
+       (auto-composition-mode nil))
+
+     (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
+   #+END_SRC
+* Global Key Bindings
+  #+BEGIN_SRC emacs-lisp
+    (bind-key "C-x k"      'kill-buffer-with-prejudice)
+    (bind-key "C-c 5"      'query-replace-regexp) ;; stupid vestigial binding
+    (bind-key "M-/"        'hippie-expand)
+    (bind-key "C-c \\"     'align-regexp)
+    (bind-key "C-c m"      'compile)
+    (bind-key "C-c 3"      'split-right-and-enter)
+    (bind-key "C-c 2"      'split-below-and-enter)
+    (bind-key "C-c p"      'switch-to-previous-buffer)
+    (bind-key "M-p"        'ace-window)
+    (bind-key "C-c /"      'comment-or-uncomment-region)
+    (bind-key "C-c x"      'ESC-prefix)
+    (bind-key "M-i"        'delete-indentation)
+    (bind-key "C-+"	   'text-scale-increase)
+    (bind-key "C--"	   'text-scale-decrease)
+    (bind-key "C-<"        'beginning-of-buffer)
+    (bind-key "C->"        'end-of-buffer)
+  #+END_SRC
+
+** Unbind some default key bindings
+   #+BEGIN_SRC emacs-lisp
+     (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
+     (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
+     (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
+     (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
+     (unbind-key "M-o")     ;; facemenu mode is useless
+     (unbind-key "C-x C-r") ;; as is find-file-read-only
    #+END_SRC
 
 * Load ~custom.el~

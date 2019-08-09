@@ -57,6 +57,7 @@ This is my configuration for the emacs editor.
       kept-old-versions 2
       version-control t)
   #+END_SRC
+
 * Define useful functions
 ** Reformat a whole buffer
    Reindet the whole buffer with ~F12~
@@ -94,16 +95,9 @@ This is my configuration for the emacs editor.
 * Theming
 ** Main Theme
    #+BEGIN_SRC emacs-lisp
-     (use-package solarized-theme
+     (use-package zenburn-theme
        :config
-       (load-theme 'solarized-light t)
-       (let ((line (face-attribute 'mode-line :underline)))
-         (set-face-attribute 'mode-line          nil :overline   line)
-         (set-face-attribute 'mode-line-inactive nil :overline   line)
-         (set-face-attribute 'mode-line-inactive nil :underline  line)
-         (set-face-attribute 'mode-line          nil :box        nil)
-         (set-face-attribute 'mode-line-inactive nil :box        nil)
-         (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
+       (load-theme 'zenburn t))
    #+END_SRC
 
 ** Modeline
@@ -164,11 +158,13 @@ This is my configuration for the emacs editor.
 
     (use-package ivy-hydra)
    #+END_SRC
+
 ** Smex
    Sort commands by recency in ivy windows
    #+BEGIN_SRC emacs-lisp
      (use-package smex)
    #+END_SRC
+
 * Counsel
   #+BEGIN_SRC emacs-lisp
     (use-package counsel
@@ -187,6 +183,7 @@ This is my configuration for the emacs editor.
              ("C-r" . counsel-minibuffer-history))
       :diminish)
   #+END_SRC
+
 * Undo Tree
   Using the beauty that is undo-tree, we can easily navigate through history of a buffer.
   This includes obviously going back in edit history, but also branching of end returning to previous states.
@@ -340,10 +337,10 @@ This is my configuration for the emacs editor.
 
 ** Beautify org-mode
 *** Icons for headline indentation
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (use-package org-bullets
        :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-   #+END_SRC
+    #+END_SRC
 
 *** Replace checkmark with unicode icons
     #+BEGIN_SRC emacs-lisp
@@ -531,6 +528,7 @@ This is my configuration for the emacs editor.
      (use-package ace-window
        :bind (("M-p" . 'ace-window)))
    #+END_SRC
+
 * Set Variables
 ** General Emacs Options
    #+BEGIN_SRC emacs-lisp
@@ -563,6 +561,7 @@ This is my configuration for the emacs editor.
        :config
        (exec-path-from-shell-initialize))
    #+END_SRC
+
 ** Show the current filename in titlebar
    #+BEGIN_SRC emacs-lisp
      (setq-default frame-title-format
@@ -625,6 +624,7 @@ This is my configuration for the emacs editor.
    #+BEGIN_SRC emacs-lisp
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
+
 ** Elisp
    Some customization for writing elisp
    #+BEGIN_SRC emacs-lisp
@@ -636,6 +636,7 @@ This is my configuration for the emacs editor.
 
      (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
    #+END_SRC
+
 * Global Key Bindings
   #+BEGIN_SRC emacs-lisp
     (bind-key "C-x k"      'kill-buffer-with-prejudice)

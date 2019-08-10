@@ -515,18 +515,18 @@ This is my configuration for the emacs editor.
                                             "C-c o"
                                             )))
    #+END_SRC
-** htmlize
-   HTML Exporter for org-mode
-   #+BEGIN_SRC emacs-lisp
-     (use-package htmlize)
-   #+END_SRC
 
 ** ACE Window
    Small package to quickly switch tiled windows.
    Use ~M-p~ to quickly switch.
    #+BEGIN_SRC emacs-lisp
      (use-package ace-window
-       :bind (("M-p" . 'ace-window)))
+       :bind (("M-o" . 'ace-window)))
+   #+END_SRC
+** htmlize
+   HTML Exporter for org-mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package htmlize)
    #+END_SRC
 
 * Set Variables
@@ -646,7 +646,7 @@ This is my configuration for the emacs editor.
     (bind-key "C-c m"      'compile)
     (bind-key "C-c 3"      'split-right-and-enter)
     (bind-key "C-c 2"      'split-below-and-enter)
-    (bind-key "C-c p"      'switch-to-previous-buffer)
+    (bind-key "M-p"        'switch-to-previous-buffer)
     (bind-key "C-c /"      'comment-or-uncomment-region)
     (bind-key "C-c x"      'ESC-prefix)
     (bind-key "M-i"        'delete-indentation)
@@ -662,7 +662,6 @@ This is my configuration for the emacs editor.
      (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
      (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
      (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
-     (unbind-key "M-o")     ;; facemenu mode is useless
      (unbind-key "C-x C-r") ;; as is find-file-read-only
    #+END_SRC
 

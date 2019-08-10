@@ -102,11 +102,8 @@ This is my configuration for the emacs editor.
 
 ** Modeline
    #+BEGIN_SRC emacs-lisp
-     (use-package moody
-       :config
-       (setq x-underline-at-descent-line t)
-       (moody-replace-mode-line-buffer-identification)
-       (moody-replace-vc-mode))
+     (use-package powerline)
+     (powerline-default-theme)
    #+END_SRC
 
 *** Minions Menu

@@ -332,6 +332,14 @@ This is my configuration for the emacs editor.
         (org-emphasize ?~)))
    #+END_SRC
 
+** Set default archive location
+   When archiving items in org files, the default ist to crate a separate file named ~<filename>.org_archive~.
+   This clutters up my notes folder quite a bit, as I use a lot of separate files with thier respective archives.
+   All archives should be stored in a single  ~.archive~ file per directory.
+   #+BEGIN_SRC emacs-lisp
+     (setq org-archive-location "./.archive::* From %s")
+   #+END_SRC
+
 ** Beautify org-mode
 *** Icons for headline indentation
     #+BEGIN_SRC emacs-lisp

@@ -1,0 +1,30 @@
+#+OPTIONS: toc:nil
+
+* Emacs Configuration
+  This repository contains my configuration files for the emacs editor.
+
+** About this config
+   This configuration uses a literate programming style to make maintaining an emacs configuration easier.
+   The main configuration is performed in the ~setup-emacs.org~ file.
+
+** Using this config
+   To use this configuration, all you need to do is save this respoitory as your ~.emacs.d~ folder and restart emacs.
+   #+BEGIN_SRC bash
+     git clone "https://github.com/luxick/emacs-config.git" ~/.emacs.d
+   #+END_SRC
+
+*** Customization
+    The configurations contains some settings specific to my workflow/preferences. Those should be changed before starting to use emacs.
+
+**** Org Folder Locations
+     I have a folder named ~Notes~ in my home dir which serves as a central spot for all my org related files.
+     This is reflected in serval variables in ~setup-emacs.org~. If this is not what you want you will have to search for all occurences of the folder name and replace them by hand.
+
+**** Personal Information
+     /TODO This is still in the config file. It sould be in somethig like a secrets.el file/
+
+** Notable Features
+*** Inlining CSS into Org HTML exports
+    The ~org-css~ folder contains some CSS files for better looking HTML org exports.
+    Before exporting ~M-x toggle-org-custom-inline-syle~ can be used to enable inlining CSS into the exported HTML file.
+    This results in a single, self contained HTML file with the desired look.

@@ -686,10 +686,11 @@ This is my configuration for the emacs editor.
     (bind-key "C-c /"      'comment-or-uncomment-region)
     (bind-key "C-c x"      'ESC-prefix)
     (bind-key "M-i"        'delete-indentation)
-    (bind-key "C-+"	   'text-scale-increase)
+    (bind-key "C-+"        'text-scale-increase)
     (bind-key "C--"	   'text-scale-decrease)
     (bind-key "C-<"        'beginning-of-buffer)
     (bind-key "C->"        'end-of-buffer)
+    (bind-key "C-x C-b"    'ibuffer) ;; buffer-list is not a good default
   #+END_SRC
 
 ** Unbind some default key bindings

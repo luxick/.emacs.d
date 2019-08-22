@@ -518,7 +518,6 @@ This is my configuration for the emacs editor.
    We want to have some nicely colored delimiters when reading and writing lisp code
    #+BEGIN_SRC emacs-lisp
     (use-package rainbow-delimiters
-      :disabled
       :hook (prog-mode . rainbow-delimiters-mode))
    #+END_SRC
 

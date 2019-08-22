@@ -289,6 +289,15 @@ This is my configuration for the emacs editor.
         (find-file "~/Notes/todo.org"))
     #+END_SRC
 
+*** The Tracking file
+    I use this file to capture dates, at wich I do certain tasks.
+    Used mostly for keeping track of habits.
+    #+BEGIN_SRC emacs-lisp
+      (defun open-main-todo-file ()
+        (interactive)
+        (find-file "~/Notes/tracking.org"))
+    #+END_SRC
+
 ** Configure org-mode
    This is the main configuration for the infamous org-mode.
    The most important parts are configuring key bindings to quickly access the files we have defined above.
@@ -458,12 +467,34 @@ This is my configuration for the emacs editor.
        (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
      #+END_SRC
 
+*** Capture Support Functions
+    First we define a function to look the subheading under which we want to file captures:
+    #+BEGIN_SRC emacs-lisp
+      (defun org-get-target-headline (&optional targets prompt)
+        "Prompt for a location in an org file and jump to it.
+
+      This is for promping for refile targets when doing captures.
+      Targets are selected from `org-refile-targets'. If TARGETS is
+      given it temporarily overrides `org-refile-targets'. PROMPT will
+      replace the default prompt message.
+
+      If CAPTURE-LOC is is given, capture to that location instead of
+      prompting."
+        (let ((org-refile-targets (or targets org-refile-targets))
+              (prompt (or prompt "Capture Location")))
+          (org-refile t nil nil prompt))
+        )
+    #+END_SRC
+
 *** Org Capture
     Here we define templates we want to use to quickly capture stuff and automatically file them away.
+
     #+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
             '(("l" "Link" entry (file "~/Notes/links.org")
-           "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")))
+               "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")
+              ("t" "Track" table-line (file+function "~/Notes/tracking.org" org-get-target-headline)
+               "| %? |  |")))
     #+END_SRC
 
 * Additional Package Imports

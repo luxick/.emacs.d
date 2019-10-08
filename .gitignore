@@ -22,3 +22,5 @@ transient
 .cache
 server
 setup-emacs.el
+*.desktop
+*.lock

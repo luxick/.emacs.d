@@ -10,13 +10,6 @@ This is my configuration for the emacs editor.
   (fringe-mode -1)
   #+END_SRC
 
-* Desktop Mode
-  Using desktop mode emacs will save the state of all buffers, their cursor positions, window arrangements and other things when exiting. When starting these states are restored.
-  #+BEGIN_SRC emacs-lisp
-    (desktop-save-mode 1)
-  #+END_SRC
-  For more information take a look at the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html][Emacs Manual]]
-
 * Set up package repositories
 ** Require package support
    State that we will need package support and define a macro for adding package repos to the archives
@@ -66,6 +59,14 @@ This is my configuration for the emacs editor.
   #+END_SRC
 
 * Define useful functions
+** Edit the config file
+   A simple funtion to open this file for quick editing.
+   #+BEGIN_SRC emacs-lisp
+     (defun edit-config ()
+       (interactive)
+       (find-file "~/.emacs.d/setup-emacs.org"))
+   #+END_SRC
+
 ** Reformat a whole buffer
    Reindet the whole buffer with ~F12~
    #+BEGIN_SRC emacs-lisp

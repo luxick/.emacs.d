@@ -148,7 +148,6 @@ This is my configuration for the emacs editor.
 ** Use Ivy
    #+BEGIN_SRC emacs-lisp
     (use-package ivy
-      :ensure t
       :init
       (ivy-mode 1)
       (unbind-key "S-SPC" ivy-minibuffer-map)
@@ -342,7 +341,6 @@ This is my configuration for the emacs editor.
              ("C-c a t"  . unindent-by-four))
       :hook (org-mode . visual-line-mode)
       :config
-
       (let ((todo-path (expand-file-name "~/Notes/todo.org")))
         (when (file-exists-p todo-path)
           (setq org-agenda-files (list todo-path)
@@ -570,6 +568,7 @@ This is my configuration for the emacs editor.
         (treemacs-follow-mode t)
         (treemacs-filewatch-mode t)
         (treemacs-fringe-indicator-mode t)
+        (treemacs-toggle-show-dotfiles)
         (pcase (cons (not (null (executable-find "git")))
                      (not (null treemacs-python-executable)))
           (`(t . t)

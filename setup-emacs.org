@@ -695,12 +695,10 @@ This is my configuration for the emacs editor.
 
 ** Show the current filename in titlebar
    #+BEGIN_SRC emacs-lisp
-     (setq-default frame-title-format
-                   (list '((buffer-file-name " %f"
-                                             (dired-directory
-                                              dired-directory
-                                              (revert-buffer-function " %b"
-                                                                      ("%b - Dir:  " default-directory)))))))
+     (setq frame-title-format
+           '((:eval user-login-name) "@" (:eval (system-name)) ": " (:eval (if (buffer-file-name)
+                                                                                (abbreviate-file-name (buffer-file-name))
+                                                                              "%b")) " [%*]"))
    #+END_SRC
 
 ** Default encoding

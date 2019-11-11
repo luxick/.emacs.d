@@ -660,6 +660,15 @@ This is my configuration for the emacs editor.
      (use-package htmlize)
    #+END_SRC
 
+** which-key
+   This package provides a minor mode that shows a list of possible keys in the minibuffer.
+   After a second of inactivity the minibuffer will expand and show possible completions for the started command.
+   #+BEGIN_SRC emacs-lisp
+     (use-package which-key
+       :config
+       (which-key-mode t))
+   #+END_SRC
+
 * Set Variables
 ** General Emacs Options
    #+BEGIN_SRC emacs-lisp

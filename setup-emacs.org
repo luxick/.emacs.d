@@ -325,7 +325,6 @@ This is my configuration for the emacs editor.
     (use-package org
       ;; Always get this from the GNU archive.
       :pin gnu
-      :diminish org-indent-mode
       :bind (("C-c o c"  . org-capture)
              ("C-c o n"  . open-semantic-notes)
              ("C-c o t"  . open-main-todo-file)
@@ -349,6 +348,7 @@ This is my configuration for the emacs editor.
       (setq org-footnote-section ""
             org-startup-with-inline-images t
             org-pretty-entities t
+            org-indent-mode t
             org-ellipsis "…"
             org-footnote-section nil
             org-hide-leading-stars nil

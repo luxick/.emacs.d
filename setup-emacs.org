@@ -144,7 +144,7 @@ Set up the fonts that should be used by emacs.
                       :width 'normal)
   (custom-theme-set-faces
    'user
-   '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1 :weight light))))
+   '(variable-pitch ((t (:family "Source Sans Pro" :height 1.0 :weight light))))
    '(fixed-pitch ((t ( :family "Hack" :slant normal :weight normal :height 1.0 :width normal)))))
 #+END_SRC
 
@@ -693,6 +693,12 @@ After a second of inactivity the minibuffer will expand and show possible comple
        (which-key-mode t))
 #+END_SRC
 
+** Autocompletion
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :config
+    (global-company-mode))
+#+END_SRC
 * Set Variables
 ** General Emacs Options
 #+BEGIN_SRC emacs-lisp

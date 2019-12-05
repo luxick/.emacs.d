@@ -242,6 +242,7 @@ table {
   border-collapse: collapse;
   display: block;
   overflow-x: auto;
+  text-align: center;
 }
 
 caption.t-above {

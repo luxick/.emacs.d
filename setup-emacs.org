@@ -764,11 +764,6 @@ After a second of inactivity the minibuffer will expand and show possible comple
    (cua-mode t)
 #+END_SRC
 
-** Remember where we are
-#+BEGIN_SRC emacs-lisp
-   (save-place-mode)
-#+END_SRC
-
 ** Set cursor and indet mode
 #+BEGIN_SRC emacs-lisp
      (setq-default

@@ -24,7 +24,6 @@ State that we will need package support and define a macro for adding package re
 #+BEGIN_SRC emacs-lisp
      (append-to-list package-archives
                      '(("melpa" . "http://melpa.org/packages/")
-                       ("melpa-stable" . "http://stable.melpa.org/packages/")
                        ("org-elpa" . "https://orgmode.org/elpa/")))
 #+END_SRC
 
@@ -708,7 +707,7 @@ After a second of inactivity the minibuffer will expand and show possible comple
        make-backup-files nil                    ; No backups, thanks.
        auto-save-default nil                    ; Or autosaves. What's the difference between autosaves and backups?
        create-lockfiles nil                     ; Emacs sure loves to put lockfiles everywhere.
-       default-directory "~/Notes/"             ; All my Notes are here.
+       default-directory "~/"                   ; Home sweet home.
        inhibit-startup-screen t                 ; No need to see GNU agitprop.
        kill-whole-line t                        ; Lets C-k delete the whole line
        require-final-newline t                  ; Auto-insert trailing newlines.

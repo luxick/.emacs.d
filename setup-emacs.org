@@ -698,6 +698,14 @@ After a second of inactivity the minibuffer will expand and show possible comple
     :config
     (global-company-mode))
 #+END_SRC
+
+** Transpose Frame
+With the transpose-frame package windows can be rearanged in a frame without the need to close and reopen them.
+#+BEGIN_SRC emacs-lisp
+  (use-package transpose-frame
+    :bind ("M-t" . transpose-frame))
+#+END_SRC
+
 * Set Variables
 ** General Emacs Options
 #+BEGIN_SRC emacs-lisp

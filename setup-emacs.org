@@ -308,34 +308,11 @@ Don't prompt to save unmodified buffers on exit.
 *** The Link Dump
 I use a single file to dump all links I plan on viewing later.
 #+BEGIN_SRC emacs-lisp
-      (defun open-link-list ()
-        (interactive)
-        (find-file "~/Notes/links.org"))
-#+END_SRC
+  (defvar link-dump "")
 
-*** The Quick Note File
-This file serves as a notepad for wirting down all sorts of things that have not yet been refiled.
-#+BEGIN_SRC emacs-lisp
-      (defun open-semantic-notes ()
-        (interactive)
-        (find-file "~/Notes/semantic.org"))
-#+END_SRC
-
-*** The TODO File
-This file will track the bulk of all todo items we will enter.
-#+BEGIN_SRC emacs-lisp
-      (defun open-main-todo-file ()
-        (interactive)
-        (find-file "~/Notes/todo.org"))
-#+END_SRC
-
-*** The Tracking file
-I use this file to capture dates, at wich I do certain tasks.
-Used mostly for keeping track of habits.
-#+BEGIN_SRC emacs-lisp
-      (defun open-main-todo-file ()
-        (interactive)
-        (find-file "~/Notes/tracking.org"))
+  (defun open-link-dump ()
+    (interactive)
+    (find-file link-dump))
 #+END_SRC
 
 ** Configure org-mode
@@ -346,9 +323,7 @@ The most important parts are configuring key bindings to quickly access the file
        ;; Always get this from the GNU archive.
        :pin gnu
        :bind (("C-c o c"  . org-capture)
-              ("C-c o n"  . open-semantic-notes)
-              ("C-c o t"  . open-main-todo-file)
-              ("C-c o l"  . open-link-list)
+              ("C-c o l"  . open-link-dump)
               ("C-c o s"  . org-store-link)
               ("C-c o a"  . org-agenda)
               :map org-mode-map
@@ -530,13 +505,11 @@ First we define a function to look the subheading under which we want to file ca
 
 *** Org Capture
 Here we define templates we want to use to quickly capture stuff and automatically file them away.
-
 #+BEGIN_SRC emacs-lisp
-      (setq org-capture-templates
-            '(("l" "Link" entry (file "~/Notes/links.org")
-               "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")
-              ("t" "Track" table-line (file+function "~/Notes/tracking.org" org-get-target-headline)
-               "| %? |  |")))
+  (setq org-capture-templates
+        '(("l" "Link" entry (file link-dump)
+           "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")
+          ))
 #+END_SRC
 
 * Treemacs
@@ -616,6 +589,7 @@ Treemacs makes navigating folders and files much easier. This is the default con
       :after treemacs magit
       :ensure t)
 #+END_SRC
+
 * Additional Package Imports
 ** All The Icons
 We want to have some nice looking icons
@@ -728,7 +702,6 @@ With the transpose-frame package windows can be rearanged in a frame without the
        confirm-kill-processes nil               ; don't whine at me when I'm quitting.
        mark-even-if-inactive nil                ; prevent really unintuitive undo behavior
        load-prefer-newer t                      ; load newest file version available
-       user-full-name "Marcel Fries"            ; it's me
        )
 #+END_SRC
 
@@ -789,6 +762,7 @@ With the transpose-frame package windows can be rearanged in a frame without the
 #+BEGIN_SRC emacs-lisp
    (set-fill-column 95)
 #+END_SRC
+
 * Hooks
 ** Remove trailing whitespace on file  close
 #+BEGIN_SRC emacs-lisp
@@ -834,6 +808,15 @@ Some customization for writing elisp
      (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
      (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
      (unbind-key "C-x C-r") ;; as is find-file-read-only
+#+END_SRC
+
+* Load Personal Information
+All information about the current user should reside in the ~personal.el~ file.
+This file contains personal information like name, email or other identifying information.
+This file should contain definitions, that are the same on every device, but sould not be commited to a repository.
+#+BEGIN_SRC emacs-lisp
+  (setq personal-file "~/.emacs.d/personal.el")
+  (load personal-file 'noerror)
 #+END_SRC
 
 * Load ~custom.el~

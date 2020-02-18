@@ -350,6 +350,7 @@ The most important parts are configuring key bindings to quickly access the file
              org-ellipsis "⤵"
              org-footnote-section nil
              org-hide-leading-stars nil
+             org-link-file-path-type 'relative
              )
        (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
 

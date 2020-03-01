@@ -319,44 +319,45 @@ I use a single file to dump all links I plan on viewing later.
 This is the main configuration for the infamous org-mode.
 The most important parts are configuring key bindings to quickly access the files we have defined above.
 #+BEGIN_SRC emacs-lisp
-     (use-package org
-       ;; Always get this from the GNU archive.
-       :pin gnu
-       :bind (("C-c o c"  . org-capture)
-              ("C-c o l"  . open-link-dump)
-              ("C-c o s"  . org-store-link)
-              ("C-c o a"  . org-agenda)
-              :map org-mode-map
-              ("M-s-<return>" . org-insert-todo-heading)
-              ("M-<return>" . org-insert-heading-respect-content)
-              ("C-c c"    . org-mode-insert-code)
-              ("C-c a s"  . org-emphasize)
-              ("C-c a r"  . org-ref)
-              ("C-c a e"  . outline-show-all)
-              ("C-c a t"  . unindent-by-four))
-       :hook ((org-mode . visual-line-mode)
-              (org-mode . variable-pitch-mode)
-              (org-mode . org-indent-mode))
-       :config
-       (let ((todo-path (expand-file-name "~/Notes/todo.org")))
-         (when (file-exists-p todo-path)
-           (setq org-agenda-files (list todo-path)
-                 org-default-notes-file todo-path)))
+  (use-package org
+    ;; Always get this from the GNU archive.
+    :pin gnu
+    :bind (("C-c o c"  . org-capture)
+           ("C-c o l"  . open-link-dump)
+           ("C-c o s"  . org-store-link)
+           ("C-c o a"  . org-agenda)
+           :map org-mode-map
+           ("M-s-<return>" . org-insert-todo-heading)
+           ("M-<return>" . org-insert-heading-respect-content)
+           ("C-c c"    . org-mode-insert-code)
+           ("C-c a s"  . org-emphasize)
+           ("C-c a r"  . org-ref)
+           ("C-c a e"  . outline-show-all)
+           ("C-c a t"  . unindent-by-four))
+    :hook ((org-mode . visual-line-mode)
+           (org-mode . variable-pitch-mode)
+           (org-mode . org-indent-mode))
+    :config
+    (let ((todo-path (expand-file-name "~/Notes/todo.org")))
+      (when (file-exists-p todo-path)
+        (setq org-agenda-files (list todo-path)
+              org-default-notes-file todo-path)))
 
-       (setq org-footnote-section ""
-             org-startup-with-inline-images t
-             org-pretty-entities t
-             org-indent-mode t
-             org-ellipsis "⤵"
-             org-footnote-section nil
-             org-hide-leading-stars nil
-             org-link-file-path-type 'relative
-             )
-       (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
+    (setq org-footnote-section ""
+          org-startup-with-inline-images t
+          org-pretty-entities t
+          org-indent-mode t
+          org-ellipsis "⤵"
+          org-footnote-section nil
+          org-hide-leading-stars nil
+          org-link-file-path-type 'relative
+          org-image-actual-width nil           ; with this image sizes can be set per image, with an attribute
+          )
+    (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
 
-       (defun org-mode-insert-code ()
-         (interactive)
-         (org-emphasize ?~)))
+    (defun org-mode-insert-code ()
+      (interactive)
+      (org-emphasize ?~)))
 #+END_SRC
 
 ** Set default archive location

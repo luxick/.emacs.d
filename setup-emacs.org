@@ -371,21 +371,29 @@ All archives should be stored in a single  ~.archive~ file per directory.
 ** Beautify org-mode
 *** Icons for headline indentation
 #+BEGIN_SRC emacs-lisp
-     (use-package org-bullets
-       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (use-package org-bullets
+    :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+  (setq org-bullets-bullet-list '("◉" "○" "◆" "✿" "✚" "▶"))
 #+END_SRC
 
 *** Replace checkmark with unicode icons
 #+BEGIN_SRC emacs-lisp
-      (use-package pretty-mode
-        :init (global-pretty-mode t))
+  (use-package pretty-mode
+    :init (global-pretty-mode t))
 
-      (add-hook 'org-mode-hook (lambda ()
-         "Beautify Org Checkbox Symbol"
-         (push '("[ ]" . "☐") prettify-symbols-alist)
-         (push '("[X]" . "☑" ) prettify-symbols-alist)
-         (push '("[-]" . "❍" ) prettify-symbols-alist)
-         (prettify-symbols-mode)))
+  (add-hook 'org-mode-hook
+            (lambda ()
+              "Beautify Org Checkbox Symbol"
+              (push '("[ ]" . "☐") prettify-symbols-alist)
+              (push '("[X]" . "☑" ) prettify-symbols-alist)
+              (push '("[-]" . "❍" ) prettify-symbols-alist)
+              (prettify-symbols-mode)))
+#+END_SRC
+
+We also want them in exported HTML files
+#+BEGIN_SRC emacs-lisp
+  (setq org-html-checkbox-type 'html)
 #+END_SRC
 
 *** Strike out done ckeckbox items
@@ -399,6 +407,13 @@ All archives should be stored in a single  ~.archive~ file per directory.
        `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
           1 'org-checkbox-done-text prepend))
        'append)
+#+END_SRC
+
+*** Replace dash in bullet lists with unicode symbol
+#+BEGIN_SRC emacs-lisp
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 #+END_SRC
 
 ** CSS Themes for Exports

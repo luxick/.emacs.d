@@ -99,6 +99,30 @@ Reindet the whole buffer with ~F12~
        (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
 
+** Fold all except the current heading
+With this all other subtrees in the buffer van be collapsed, leaving only the subtree at the point expanded
+#+BEGIN_SRC emacs-lisp
+  (defun org-show-current-heading-tidily ()
+    (interactive)  ;Inteactive
+    "Show next entry, keeping other entries closed."
+    (if (save-excursion (end-of-line) (outline-invisible-p))
+        (progn (org-show-entry) (show-children))
+      (outline-back-to-heading)
+      (unless (and (bolp) (org-on-heading-p))
+        (org-up-heading-safe)
+        (hide-subtree)
+        (error "Boundary reached"))
+      (org-overview)
+      (org-reveal t)
+      (org-show-entry)
+      (show-children)))
+#+END_SRC
+
+And it should be accessible with a quick keystroke:
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\M-s" 'org-show-current-heading-tidily)
+#+END_SRC
+
 * Theming
 ** Main Theme
 #+BEGIN_SRC emacs-lisp
@@ -540,6 +564,7 @@ Using ~ox-hugo~ a directory of org files can autmatically be extported to markdo
 [[https://ox-hugo.scripter.co/][Documentation]]
 
 * Deft
+Deft package for very nice searching anf file creating.
 #+BEGIN_SRC emacs-lisp
   (use-package deft
     :bind ("<f8>" . deft)
@@ -548,6 +573,8 @@ Using ~ox-hugo~ a directory of org files can autmatically be extported to markdo
                   deft-extensions '("org")
                   deft-default-extension "org"))
 #+END_SRC
+
+Note that the ~deft-directory~ variable has to be set before using
 
 * Treemacs
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.

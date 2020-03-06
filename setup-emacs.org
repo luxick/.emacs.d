@@ -770,10 +770,12 @@ With the transpose-frame package windows can be rearanged in a frame without the
 #+END_SRC
 
 ** Read environment variables from the shell
+When not running on a windows system, we can use the env variables in emacs
 #+BEGIN_SRC emacs-lisp
-     (use-package exec-path-from-shell
-       :config
-       (exec-path-from-shell-initialize))
+  (use-package exec-path-from-shell
+    :if (not (eq system-type 'windows-nt))
+    :config
+    (exec-path-from-shell-initialize))
 #+END_SRC
 
 ** Show the current filename in titlebar

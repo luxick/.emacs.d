@@ -21,7 +21,7 @@ icons
 transient
 .cache
 server
-setup-emacs.el
 *.desktop
 *.lock
 personal.el
+README.el

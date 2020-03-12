@@ -453,7 +453,7 @@ To use it type ~M-x toggle-org-custom-inline-style~ into an org-mode buffer.
 When exporting to HTML emacs will ask which css theme to use.
 
 #+BEGIN_SRC emacs-lisp
-     (defun toggle-org-custom-inline-style ()
+     (defun org-html-inline-style ()
        (interactive)
        (let ((hook 'org-export-before-parsing-hook)
              (fun 'set-org-html-style))

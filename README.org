@@ -19,5 +19,5 @@ All personal information, that emacs should use (username, e-mail address, etc.)
 ** Notable Features
 *** Inlining CSS into Org HTML exports
 The ~org-css~ folder contains some CSS files for better looking HTML org exports.
-Before exporting ~M-x toggle-org-custom-inline-syle~ can be used to enable inlining CSS into the exported HTML file.
+Before exporting ~M-x org-html-inline-syle~ can be used to enable inlining CSS into the exported HTML file.
 This results in a single, self contained HTML file with the desired look.

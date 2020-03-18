@@ -852,6 +852,7 @@ Some customization for writing elisp
     (bind-key "C-<"        'beginning-of-buffer)
     (bind-key "C->"        'end-of-buffer)
     (bind-key "C-x C-b"    'ibuffer) ;; buffer-list is not a good default
+    (bind-key "C-c n"      'line-number-mode)
 #+END_SRC
 
 ** Unbind some default key bindings

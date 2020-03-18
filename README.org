@@ -10,6 +10,11 @@ Remove all those UI elements. They do not look good and waste space.
   (fringe-mode -1)
 #+END_SRC
 
+Make the frame a bit larger
+#+BEGIN_SRC emacs-lisp
+  (when window-system (set-frame-size (selected-frame) 180 60))
+#+END_SRC
+
 * Set up package repositories
 ** Require package support
 State that we will need package support and define a macro for adding package repos to the archives

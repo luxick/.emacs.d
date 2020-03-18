@@ -63,7 +63,7 @@ A simple funtion to open this file for quick editing.
 #+BEGIN_SRC emacs-lisp
      (defun edit-config ()
        (interactive)
-       (find-file "~/.emacs.d/setup-emacs.org"))
+       (find-file "~/.emacs.d/README.org"))
 #+END_SRC
 
 ** Reformat a whole buffer

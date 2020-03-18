@@ -641,6 +641,12 @@ Treemacs makes navigating folders and files much easier. This is the default con
       :ensure t)
 #+END_SRC
 
+** Start with open tree
+Show the tree on emacs startup
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-startup-hook 'treemacs)
+#+END_SRC
+
 * Additional Package Imports
 ** All The Icons
 We want to have some nice looking icons

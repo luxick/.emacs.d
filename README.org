@@ -848,6 +848,7 @@ Some customization for writing elisp
 * Global Key Bindings
 #+BEGIN_SRC emacs-lisp
     (bind-key "C-x k"      'kill-buffer-with-prejudice)
+    (bind-key "C-x C-k"    'kill-buffer-and-window)
     (bind-key "C-c 5"      'query-replace-regexp) ;; stupid vestigial binding
     (bind-key "M-/"        'hippie-expand)
     (bind-key "C-c \\"     'align-regexp)

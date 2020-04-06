@@ -1,0 +1,11 @@
+#+TITLE: %n
+#+DESCRIPTION:
+#+KEYWORDS:
+#+STARTUP:  content
+#+DATE: %d
+
+- [[wiki:index][Index]]
+
+- Related:
+
+* %n

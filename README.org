@@ -128,6 +128,14 @@ And it should be accessible with a quick keystroke:
   (global-set-key "\M-s" 'org-show-current-heading-tidily)
 #+END_SRC
 
+** Load file content as string
+#+BEGIN_SRC emacs-lisp
+  (defun get-string-from-file (filePath)
+    "Return filePath's file content."
+    (with-temp-buffer
+      (insert-file-contents filePath)
+      (buffer-string)))
+#+END_SRC
 * Theming
 ** Main Theme
 Theme source: [[https://gitlab.com/protesilaos/modus-themes][Modus Operandi]]
@@ -554,6 +562,47 @@ Using ~ox-hugo~ a directory of org files can autmatically be extported to markdo
 #+END_SRC
 
 [[https://ox-hugo.scripter.co/][Documentation]]
+
+* The Wiki
+[[https://github.com/caiorss/org-wiki][org-wiki]] is used to create a personal desktop wiki for myself.
+The advantage is that everything can be done in org-mode.
+
+The package is not available on [[https://melpa.org/][MELPA]] as of now.
+It must be installed manually via git:
+#+BEGIN_SRC bash
+  mkdir -p ~/.emacs.d/packages/
+  cd ~/.emacs.d/packages/
+  git clone  https://github.com/caiorss/org-wiki
+#+END_SRC
+
+This will ensure the package is installed and set the default wiki location
+#+BEGIN_SRC emacs-lisp
+  (use-package org-wiki)
+  (setq org-wiki-location "~/org-wiki")
+#+END_SRC
+
+The backups will be stored at another location
+#+BEGIN_SRC emacs-lisp
+  (setq org-wiki-backup-location "~/.org-wiki-backup/")
+#+END_SRC
+
+The template for new wiki pages is stored in a separate file.
+This will be used to fill new pages.
+#+BEGIN_SRC emacs-lisp
+  (setq org-wiki-template (get-string-from-file "~/.emacs.d/org-templates/wiki.org"))
+#+END_SRC
+
+** Wiki key binds
+All key bindings for or wiki will start with ~C-c w~ and an additional  letters  for the command
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-c w i" 'org-wiki-index)         ; Go to the wiki index
+  (bind-key "C-c w l" 'org-wiki-insert-new)    ; Link to another wiki page, will create on if it does not exist
+  (bind-key "C-c w e" 'org-wiki-insert-link)   ; Link to an existing wiki page with helm search
+  (bind-key "C-c w n" 'org-wiki-new)           ; Create a new page
+  (bind-key "C-c w s" 'org-wiki-search)        ; Regex full text search
+  (bind-key "C-c w p" 'org-wiki-helm)          ; Search pages by title
+  (bind-key "C-c w d" 'org-wiki-toggle-images) ; Toggle image diaplay on pages
+#+END_SRC
 
 * Deft
 Deft package for very nice searching anf file creating.

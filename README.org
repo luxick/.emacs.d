@@ -701,6 +701,30 @@ Show the tree on emacs startup
   (add-hook 'emacs-startup-hook 'treemacs)
 #+END_SRC
 
+* Elfeed
+[[https://github.com/skeeto/elfeed][Elfeed]] is an RSS reader for emacs.
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :bind ("C-x w" . 'elfeed))
+#+END_SRC
+
+** Hooks
+elfeed can be extended with various hooks for ease of used
+
+*** Auto tag youtube feeds
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'elfeed-new-entry-hook
+            (elfeed-make-tagger :feed-url "youtube\\.com"
+                                :add '(video youtube)))
+#+END_SRC
+
+*** Do not spam unread tag
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'elfeed-new-entry-hook
+            (elfeed-make-tagger :before "2 weeks ago"
+                                :remove 'unread))
+#+END_SRC
+
 * Additional Package Imports
 ** All The Icons
 We want to have some nice looking icons

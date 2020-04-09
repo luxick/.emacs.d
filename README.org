@@ -142,21 +142,19 @@ Theme source: [[https://gitlab.com/protesilaos/modus-themes][Modus Operandi]]
 #+BEGIN_SRC emacs-lisp
   (use-package modus-operandi-theme)
 #+END_SRC
-
 ** Modeline
 #+BEGIN_SRC emacs-lisp
-     (use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode))
+  (use-package moody
+    :config
+    (setq x-underline-at-descent-line t)
+    (moody-replace-mode-line-buffer-identification)
+    (moody-replace-vc-mode))
 #+END_SRC
 
-*** Minions Menu
-Add a menu to the modeline to access all minor modes.
 #+BEGIN_SRC emacs-lisp
-      (use-package minions
-        :config (minions-mode 1))
+  (use-package minions
+    :config (minions-mode 1))
 #+END_SRC
-
 ** Font
 Set up the fonts that should be used by emacs.
 #+BEGIN_SRC emacs-lisp

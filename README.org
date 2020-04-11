@@ -727,6 +727,18 @@ elfeed can be extended with various hooks for ease of used
                                 :remove 'unread))
 #+END_SRC
 
+* Programming
+** Nim
+These are settings and packages used for programming [[https://nim-lang.org/][nim]] in emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package nim-mode)
+#+END_SRC
+
+And an extra package to provide flycheck infos for nim
+Source: [[https://github.com/ALSchwalm/flycheck-nim][Github]]
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck-nim)
+#+END_SRC
 * Additional Package Imports
 ** All The Icons
 We want to have some nice looking icons

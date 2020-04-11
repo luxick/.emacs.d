@@ -566,11 +566,15 @@ Using ~ox-hugo~ a directory of org files can autmatically be extported to markdo
 The advantage is that everything can be done in org-mode.
 
 The package is not available on [[https://melpa.org/][MELPA]] as of now.
-It must be installed manually via git:
+It must be installed manually:
 #+BEGIN_SRC bash
-  mkdir -p ~/.emacs.d/packages/
-  cd ~/.emacs.d/packages/
-  git clone  https://github.com/caiorss/org-wiki
+  (let ((url "https://raw.githubusercontent.com/caiorss/org-wiki/master/org-wiki.el"))
+      (with-current-buffer (url-retrieve-synchronously url)
+	(goto-char (point-min))
+	(re-search-forward "^$")
+	(delete-region (point) (point-min))
+	(kill-whole-line)
+	(package-install-from-buffer)))
 #+END_SRC
 
 This will ensure the package is installed and set the default wiki location

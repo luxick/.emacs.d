@@ -687,11 +687,6 @@ Treemacs makes navigating folders and files much easier. This is the default con
             ("C-x t C-t" . treemacs-find-file)
             ("C-x t M-t" . treemacs-find-tag)))
 
-    (use-package treemacs-icons-dired
-      :after treemacs dired
-      :ensure t
-      :config (treemacs-icons-dired-mode))
-
     (use-package treemacs-magit
       :after treemacs magit
       :ensure t)

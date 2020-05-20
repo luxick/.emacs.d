@@ -901,7 +901,7 @@ When not running on a windows system, we can use the env variables in emacs
 ** Behave like a normal text editor
 Changed: No more CUA, ~C-c~ is used in to many places that are broken by cua-mode
 #+BEGIN_SRC emacs-lisp
-   ; (cua-mode t)
+  (cua-mode t)
 #+END_SRC
 
 ** Set cursor and indet mode

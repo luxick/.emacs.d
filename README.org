@@ -787,9 +787,9 @@ The packages only works on linux and reuqires that emacs is compiled with module
          (bound-and-true-p module-file-suffix))
       (use-package vterm
         :ensure t
-        :custom
-        (vterm-kill-buffer-on-exit t)
-        (vterm-copy-exclude-prompt t)))
+        :config
+        (setq vterm-kill-buffer-on-exit t)
+        (setq vterm-copy-exclude-prompt t)))
 #+End_SRC
 * Set Variables
 ** General Emacs Options

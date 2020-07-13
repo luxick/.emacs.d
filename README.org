@@ -779,13 +779,18 @@ With the transpose-frame package windows can be rearanged in a frame without the
     :bind ("M-t" . transpose-frame))
 #+END_SRC
 
-** terminal-here
-[[https://github.com/davidshepherd7/terminal-here][This]] package is used to open an extenal terminal emulator in the directory visited by the current buffer.
+** vterm
+[[https://github.com/akermu/emacs-libvterm][vterm]] is a superiour alternative to the integrated eshell, shell or term modes.
+The packages only works on linux and reuqires that emacs is compiled with module support (the ~module-file-suffix~ variable will be filled).
 #+BEGIN_SRC emacs-lisp
-  (use-package terminal-here)
-  (global-set-key (kbd "C-<f5>") #'terminal-here-launch)
-  (global-set-key (kbd "C-<f6>") #'terminal-here-project-launch)
-#+END_SRC
+  (if (and (string-equal system-type "gnu/linux")
+         (bound-and-true-p module-file-suffix))
+      (use-package vterm
+        :ensure t
+        :custom
+        (vterm-kill-buffer-on-exit t)
+        (vterm-copy-exclude-prompt t)))
+#+End_SRC
 * Set Variables
 ** General Emacs Options
 #+BEGIN_SRC emacs-lisp

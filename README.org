@@ -10,11 +10,6 @@ Remove all those UI elements. They do not look good and waste space.
   (fringe-mode -1)
 #+END_SRC
 
-Make the frame a bit larger
-#+BEGIN_SRC emacs-lisp
-  (when window-system (set-frame-size (selected-frame) 180 60))
-#+END_SRC
-
 * Set up package repositories
 ** Require package support
 State that we will need package support and define a macro for adding package repos to the archives
@@ -136,55 +131,20 @@ And it should be accessible with a quick keystroke:
       (insert-file-contents filePath)
       (buffer-string)))
 #+END_SRC
+** Load all files in a directory
+#+BEGIN_SRC emacs-lisp
+  (defun load-directory (dir)
+    (let ((load-it (lambda (f)
+                     (load-file (concat (file-name-as-directory dir) f)))
+                   ))
+      (mapc load-it (directory-files dir nil "\\.el$"))))
+#+END_SRC
 * Theming
-** Main Theme
-Theme source: [[https://gitlab.com/protesilaos/modus-themes][Modus Operandi]]
+Load font from file. See [[https://github.com/rougier/elegant-emacs]] for more.
 #+BEGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme)
+  (load "~/.emacs.d/elegant-emacs/elegant-emacs-common.el")
+  (load "~/.emacs.d/elegant-emacs/elegant-emacs-light-theme.el")
 #+END_SRC
-** Modeline
-#+BEGIN_SRC emacs-lisp
-  (use-package moody
-    :config
-    (setq x-underline-at-descent-line t)
-    (moody-replace-mode-line-buffer-identification)
-    (moody-replace-vc-mode))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package minions
-    :config (minions-mode 1))
-#+END_SRC
-** Font
-Set up the fonts that should be used by emacs.
-#+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil
-                      :family "Hack"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-  (custom-theme-set-faces
-   'user
-   '(variable-pitch ((t (:family "Source Sans Pro" :height 1.0 :weight light))))
-   '(fixed-pitch ((t ( :family "Hack" :slant normal :weight normal :height 1.0 :width normal)))))
-#+END_SRC
-
-This sets different fonts for special blocks in org-mode. So that when ~variable-pitch~ mode is active code block are not broken.
-#+BEGIN_SRC emacs-lisp
-  (custom-theme-set-faces
-   'user
-   '(org-block                 ((t (:inherit fixed-pitch))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-link                  ((t (:foreground "royal blue" :underline t))))
-   '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value        ((t (:inherit fixed-pitch))) t)
-   '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-tag                   ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   '(org-verbatim              ((t (:inherit (shadow fixed-pitch)))))
-   '(org-table                 ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent                ((t (:inherit (org-hide fixed-pitch))))))
-#+END_SRC
-
 * Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
 ** Use Ivy
@@ -374,6 +334,7 @@ The most important parts are configuring key bindings to quickly access the file
           org-hide-leading-stars nil
           org-link-file-path-type 'relative
           org-image-actual-width nil           ; with this image sizes can be set per image, with an attribute
+          org-display-inline-images t
           )
     (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
 
@@ -451,42 +412,42 @@ To use it type ~M-x toggle-org-custom-inline-style~ into an org-mode buffer.
 When exporting to HTML emacs will ask which css theme to use.
 
 #+BEGIN_SRC emacs-lisp
-     (defun org-html-inline-style ()
-       (interactive)
-       (let ((hook 'org-export-before-parsing-hook)
-             (fun 'set-org-html-style))
-         (if (memq fun (eval hook))
-             (progn
-               (remove-hook hook fun 'buffer-local)
-               (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
-           (add-hook hook fun nil 'buffer-local)
-           (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
+  (defun org-html-inline-style ()
+    (interactive)
+    (let ((hook 'org-export-before-parsing-hook)
+          (fun 'set-org-html-style))
+      (if (memq fun (eval hook))
+          (progn
+            (remove-hook hook fun 'buffer-local)
+            (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
+        (add-hook hook fun nil 'buffer-local)
+        (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
 
-     (defun org-theme ()
-       (interactive)
-       (let* ((cssdir org-theme-css-dir)
-              (css-choices (directory-files cssdir nil ".css$"))
-              (css (completing-read "theme: " css-choices nil t)))
-         (concat cssdir css)))
+  (defun org-theme ()
+    (interactive)
+    (let* ((cssdir org-theme-css-dir)
+           (css-choices (directory-files cssdir nil ".css$"))
+           (css (completing-read "theme: " css-choices nil t)))
+      (concat cssdir css)))
 
-     (defun set-org-html-style (&optional backend)
-       (interactive)
-       (when (or (null backend) (eq backend 'html))
-         (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
-           (if (file-exists-p f)
-               (progn
-                 (set (make-local-variable 'org-theme-css) f)
-                 (set (make-local-variable 'org-html-head)
-                      (with-temp-buffer
-                        (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
-                        (insert-file-contents f)
-                        (goto-char (point-max))
-                        (insert "\n/*]]>*/-->\n</style>\n")
-                        (buffer-string)))
-                 (set (make-local-variable 'org-html-head-include-default-style)
-                      nil)
-                 (message "Set custom style from %s" f))
-             (message "Custom header file %s doesnt exist")))))
+  (defun set-org-html-style (&optional backend)
+    (interactive)
+    (when (or (null backend) (eq backend 'html))
+      (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
+        (if (file-exists-p f)
+            (progn
+              (set (make-local-variable 'org-theme-css) f)
+              (set (make-local-variable 'org-html-head)
+                   (with-temp-buffer
+                     (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
+                     (insert-file-contents f)
+                     (goto-char (point-max))
+                     (insert "\n/*]]>*/-->\n</style>\n")
+                     (buffer-string)))
+              (set (make-local-variable 'org-html-head-include-default-style)
+                   nil)
+              (message "Set custom style from %s" f))
+          (message "Custom header file %s doesnt exist")))))
 #+END_SRC
 
 ** Prettier Timestamps in Exports
@@ -561,19 +522,6 @@ Using ~ox-hugo~ a directory of org files can autmatically be extported to markdo
 
 [[https://ox-hugo.scripter.co/][Documentation]]
 
-* Deft
-Deft package for very nice searching anf file creating.
-#+BEGIN_SRC emacs-lisp
-  (use-package deft
-    :bind ("<f8>" . deft)
-    :commands (deft)
-    :config (setq deft-recursive t
-                  deft-extensions '("org")
-                  deft-default-extension "org"))
-#+END_SRC
-
-Note that the ~deft-directory~ variable has to be set before using
-
 * Treemacs
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.
 
@@ -646,13 +594,6 @@ Treemacs makes navigating folders and files much easier. This is the default con
       :after treemacs magit
       :ensure t)
 #+END_SRC
-
-** Start with open tree
-Show the tree on emacs startup
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'emacs-startup-hook 'treemacs)
-#+END_SRC
-
 * Elfeed
 [[https://github.com/skeeto/elfeed][Elfeed]] is an RSS reader for emacs.
 #+BEGIN_SRC emacs-lisp
@@ -677,18 +618,6 @@ elfeed can be extended with various hooks for ease of used
                                 :remove 'unread))
 #+END_SRC
 
-* Programming
-** Nim
-These are settings and packages used for programming [[https://nim-lang.org/][nim]] in emacs
-#+BEGIN_SRC emacs-lisp
-  (use-package nim-mode)
-#+END_SRC
-
-And an extra package to provide flycheck infos for nim
-Source: [[https://github.com/ALSchwalm/flycheck-nim][Github]]
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck-nim)
-#+END_SRC
 * Additional Package Imports
 ** All The Icons
 We want to have some nice looking icons
@@ -729,20 +658,6 @@ Quick bind to ~C-c u ~ to duplicate the current line
        :bind (("C-c u" . duplicate-thing)))
 #+END_SRC
 
-** Guide Key
-Use this to get some help with key bindings
-#+BEGIN_SRC emacs-lisp
-     (use-package guide-key
-       :diminish guide-key-mode
-       :config
-       (guide-key-mode t)
-       (setq guide-key/guide-key-sequence '("C-x v" ;; version control
-                                            "C-c a" ;; my mode-specific bindings
-                                            "C-c l" ;; line-jumping
-                                            "C-c o"
-                                            )))
-#+END_SRC
-
 ** ACE Window
 Small package to quickly switch tiled windows.
 Use ~M-p~ to quickly switch.
@@ -756,27 +671,11 @@ HTML Exporter for org-mode
      (use-package htmlize)
 #+END_SRC
 
-** which-key
-This package provides a minor mode that shows a list of possible keys in the minibuffer.
-After a second of inactivity the minibuffer will expand and show possible completions for the started command.
-#+BEGIN_SRC emacs-lisp
-     (use-package which-key
-       :config
-       (which-key-mode t))
-#+END_SRC
-
 ** Autocompletion
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :config
     (global-company-mode))
-#+END_SRC
-
-** Transpose Frame
-With the transpose-frame package windows can be rearanged in a frame without the need to close and reopen them.
-#+BEGIN_SRC emacs-lisp
-  (use-package transpose-frame
-    :bind ("M-t" . transpose-frame))
 #+END_SRC
 
 ** vterm
@@ -878,7 +777,7 @@ Changed: No more CUA, ~C-c~ is used in to many places that are broken by cua-mod
 #+END_SRC
 
 * Hooks
-** Remove trailing whitespace on file  close
+** Remove trailing whitespace on file close
 #+BEGIN_SRC emacs-lisp
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
 #+END_SRC

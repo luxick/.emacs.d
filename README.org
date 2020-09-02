@@ -399,57 +399,6 @@ We also want them in exported HTML files
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 #+END_SRC
 
-** CSS Themes for Exports
-When exporting from org-mode (usually to HTML) we want to specify additional styles.
-#+BEGIN_SRC emacs-lisp
-     (defvar org-theme-css-dir "~/.emacs.d/org-css/")
-#+END_SRC
-
-Pack some ~.css~ files into this directory. They will be available for choosing when exporting.
-The folowing code will define a function to inline css into a self-contained html file.
-
-To use it type ~M-x toggle-org-custom-inline-style~ into an org-mode buffer.
-When exporting to HTML emacs will ask which css theme to use.
-
-#+BEGIN_SRC emacs-lisp
-  (defun org-html-inline-style ()
-    (interactive)
-    (let ((hook 'org-export-before-parsing-hook)
-          (fun 'set-org-html-style))
-      (if (memq fun (eval hook))
-          (progn
-            (remove-hook hook fun 'buffer-local)
-            (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
-        (add-hook hook fun nil 'buffer-local)
-        (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
-
-  (defun org-theme ()
-    (interactive)
-    (let* ((cssdir org-theme-css-dir)
-           (css-choices (directory-files cssdir nil ".css$"))
-           (css (completing-read "theme: " css-choices nil t)))
-      (concat cssdir css)))
-
-  (defun set-org-html-style (&optional backend)
-    (interactive)
-    (when (or (null backend) (eq backend 'html))
-      (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
-        (if (file-exists-p f)
-            (progn
-              (set (make-local-variable 'org-theme-css) f)
-              (set (make-local-variable 'org-html-head)
-                   (with-temp-buffer
-                     (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
-                     (insert-file-contents f)
-                     (goto-char (point-max))
-                     (insert "\n/*]]>*/-->\n</style>\n")
-                     (buffer-string)))
-              (set (make-local-variable 'org-html-head-include-default-style)
-                   nil)
-              (message "Set custom style from %s" f))
-          (message "Custom header file %s doesnt exist")))))
-#+END_SRC
-
 ** Prettier Timestamps in Exports
 The default timestamps look pretty unintuitive, with all the angle brackets and all. Let's make them look better.
 #+BEGIN_SRC emacs-lisp
@@ -512,16 +461,30 @@ Here we define templates we want to use to quickly capture stuff and automatical
           ))
 #+END_SRC
 
-** Exports using Hugo
-Using ~ox-hugo~ a directory of org files can autmatically be extported to markdown files.
+** CSS inlining
+Auto inline a CSS theme for org HTML exports.
+This will make sure a self contained single HTML file is created.
+
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-hugo
-    :ensure t            ;Auto-install the package from Melpa (optional)
-    :after ox)
+  (defun my-org-inline-css-hook (exporter)
+    "Insert custom inline css"
+    (when (eq exporter 'html)
+      (let* ((dir (ignore-errors (file-name-directory (buffer-file-name))))
+             (path (concat dir "style.css"))
+             (homestyle (or (null dir) (null (file-exists-p path))))
+             (final (if homestyle "~/.emacs.d/org-theme.css" path))) ;; <- set your own style file path
+        (setq org-html-head-include-default-style nil)
+        (setq org-html-head (concat
+                             "<style type=\"text/css\">\n"
+                             "<!--/*--><![CDATA[/*><!--*/\n"
+                             (with-temp-buffer
+                               (insert-file-contents final)
+                               (buffer-string))
+                             "/*]]>*/-->\n"
+                             "</style>\n")))))
+
+  (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)
 #+END_SRC
-
-[[https://ox-hugo.scripter.co/][Documentation]]
-
 * Treemacs
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.
 
@@ -583,9 +546,8 @@ Treemacs makes navigating folders and files much easier. This is the default con
            (treemacs-git-mode 'simple))))
       :bind
       (:map global-map
-            ("M-0"       . treemacs-select-window)
+            ("M-0"       . treemacs)
             ("C-x t 1"   . treemacs-delete-other-windows)
-            ("C-x t t"   . treemacs)
             ("C-x t B"   . treemacs-bookmark)
             ("C-x t C-t" . treemacs-find-file)
             ("C-x t M-t" . treemacs-find-tag)))
@@ -690,6 +652,22 @@ The packages only works on linux and reuqires that emacs is compiled with module
         (setq vterm-kill-buffer-on-exit t)
         (setq vterm-copy-exclude-prompt t)))
 #+End_SRC
+** Olivetti
+A simple Emacs minor mode for a nice writing environment.
+[[https://github.com/rnkn/olivetti][Gihub Link]]
+#+BEGIN_SRC emacs-lisp
+  (use-package olivetti
+    :config
+    (setq-default
+     olivetti-hide-mode-line t
+     olivetti-body-width 90))
+#+END_SRC
+
+Auto enable it in text modes
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'text-mode-hook 'olivetti-mode)
+#+END_SRC
 * Set Variables
 ** General Emacs Options
 #+BEGIN_SRC emacs-lisp

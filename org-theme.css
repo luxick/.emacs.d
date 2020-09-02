@@ -243,6 +243,7 @@ table {
   display: block;
   overflow-x: auto;
   text-align: center;
+  border-width: 0;
 }
 
 caption.t-above {

@@ -668,6 +668,14 @@ Auto enable it in text modes
 #+BEGIN_SRC emacs-lisp
   (add-hook 'text-mode-hook 'olivetti-mode)
 #+END_SRC
+** Ag
+Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file type, edit results inline, or find files.
+
+[[https://agel.readthedocs.io/en/latest/index.html][Documentation]]
+
+#+BEGIN_SRC emacs-lisp
+(use-package ag)
+#+END_SRC
 * Set Variables
 ** General Emacs Options
 #+BEGIN_SRC emacs-lisp

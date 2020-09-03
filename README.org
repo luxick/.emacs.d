@@ -142,8 +142,26 @@ And it should be accessible with a quick keystroke:
 * Theming
 Load font from file. See [[https://github.com/rougier/elegant-emacs]] for more.
 #+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/elegant-emacs/elegant-emacs-common.el")
-  (load "~/.emacs.d/elegant-emacs/elegant-emacs-light-theme.el")
+  ;; Light Theme
+  (use-package modus-operandi-theme)
+  (load-theme 'modus-operandi t)
+
+  ;; Dark Theme
+  ;(use-package modus-vivendi-theme)
+  ;(load-theme 'modus-vivendi t)
+
+  (setq default-frame-alist
+        (append (list '(width  . 90) '(height . 50)
+                      '(vertical-scroll-bars . nil)
+                      '(internal-border-width . 10)
+                      '(font . "Roboto Mono Light 10"))))
+#+END_SRC
+
+Use a nice looking modeline package
+
+#+BEGIN_SRC emacs-lisp
+  (use-package telephone-line)
+  (telephone-line-mode 1)
 #+END_SRC
 * Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
@@ -426,7 +444,6 @@ OK, no more brackets. Now for a better formatted display.
 Here we set custom templates to be used for structure expansion.
 These are used when we type "<" folowed by the shortcut for a template and hit "TAB".
 e.g. "<s TAB" expands to ~#+BEGIN_SRC ?\n\n#+END_SRC~
-
 **** emacs-lisp
 Shortcut for creating ~emacs-lisp~ code blocks. This is used extensively in this very file.
 #+BEGIN_SRC emacs-lisp
@@ -484,6 +501,19 @@ This will make sure a self contained single HTML file is created.
                              "</style>\n")))))
 
   (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)
+#+END_SRC
+** Export to a subdirectory
+This snippet will create a sub dir for exports from org-mode.
+[[https://stackoverflow.com/questions/9559753/emacs-org-mode-export-to-another-directory][See the Stackoverflow question]]
+
+#+BEGIN_SRC emacs-lisp
+  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+    (unless pub-dir
+      (setq pub-dir "Exports")
+      (unless (file-directory-p pub-dir)
+        (make-directory pub-dir)))
+    (apply orig-fun extension subtreep pub-dir nil))
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
 #+END_SRC
 * Treemacs
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.

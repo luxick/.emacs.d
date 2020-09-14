@@ -358,9 +358,6 @@ Ellipsis icon:
 
 Nice Icons for lists:
 #+BEGIN_SRC emacs-lisp
-  (use-package pretty-mode
-    :init (global-pretty-mode t))
-
   (add-hook 'org-mode-hook
             (lambda ()
               "Beautify Org Checkbox Symbol"

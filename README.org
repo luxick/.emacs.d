@@ -1,5 +1,11 @@
-#+TITLE: Emacs Configuration
+#+TITLE: luxicks Emacs Configuration
 This is my configuration for the emacs editor.
+
+Points of intrest:
+- Personal information (name, email) are stored in a separate ~personal.el~ file.
+- Machine specific settings are stored in a separate ~custom.el~ file.
+- Both files are loaded automatically.
+- When Exporting HTML from ~org-mode~ the style from the ~org-theme.css~ file is inlined automatically.
 * Set up UI
 Remove all those UI elements. They do not look good and waste space.
 #+BEGIN_SRC emacs-lisp
@@ -156,9 +162,8 @@ Apply a nice looking theme.
         (append (list '(width  . 90) '(height . 50)
                       '(vertical-scroll-bars . nil)
                       '(internal-border-width . 10)
-                      '(font . "Roboto Mono Light 11"))))
+                      '(font . "Roboto Mono Light 10"))))
 #+END_SRC
-
 Use a nice looking modeline package
 
 #+BEGIN_SRC emacs-lisp
@@ -797,7 +802,7 @@ Some customization for writing elisp
      (unbind-key "C-x C-r") ;; as is find-file-read-only
 #+END_SRC
 
-* Load Personal Information
+* Load ~personal.el~
 All information about the current user should reside in the ~personal.el~ file.
 This file contains personal information like name, email or other identifying information.
 This file should contain definitions, that are the same on every device, but sould not be commited to a repository.
@@ -805,11 +810,10 @@ This file should contain definitions, that are the same on every device, but sou
   (setq personal-file "~/.emacs.d/personal.el")
   (load personal-file 'noerror)
 #+END_SRC
-
 * Load ~custom.el~
 Load a custom file from the emacs home dir.
-This file is specific to the maschine emacs runs on.
-It conatins customizations and file locations that are maschine dependend.
+This file is specific to the machine emacs runs on.
+It conatins customizations and file locations that are machine dependend.
 #+BEGIN_SRC emacs-lisp
     (setq custom-file "~/.emacs.d/custom.el")
     (load custom-file 'noerror)

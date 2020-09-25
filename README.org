@@ -15,7 +15,6 @@ Remove all those UI elements. They do not look good and waste space.
   (tooltip-mode -1)
   (fringe-mode -1)
 #+END_SRC
-
 * Set up package repositories
 ** Require package support
 State that we will need package support and define a macro for adding package repos to the archives
@@ -35,19 +34,17 @@ State that we will need package support and define a macro for adding package re
 
 ** Ensure ~use-package~ command is present
 #+BEGIN_SRC emacs-lisp
-     (package-initialize)
+  (package-initialize)
 
-     (unless (package-installed-p 'use-package)
-       (package-refresh-contents)
-       (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 
-     (require 'use-package)
+  (require 'use-package)
 
-     (setq
-      use-package-always-ensure t
-      use-package-verbose t)
+  (setq use-package-always-ensure t)
 
-      (use-package gnu-elpa-keyring-update)
+  (use-package gnu-elpa-keyring-update)
 #+END_SRC
 
 * Set Backup Location
@@ -308,7 +305,8 @@ The most important parts are configuring key bindings to quickly access the file
            ("C-c a s"  . org-emphasize)
            ("C-c a r"  . org-ref)
            ("C-c a e"  . outline-show-all)
-           ("C-c a t"  . unindent-by-four))
+           ("C-c a t"  . unindent-by-four)
+           ("C-c -"    . org-edit-special))
     :hook ((org-mode . visual-line-mode)
            (org-mode . variable-pitch-mode)
            (org-mode . org-indent-mode))

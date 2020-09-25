@@ -1,7 +1,7 @@
 ;; init.el -- Marcel Fries <mfries@luxick.de>
 
 ;; Configure emacs in a literate style from an org file.
-;; The file sould be named "setup-emacs.org". It should be located in your ".emacs.d" directory.
+;; The file sould be named "README.org". It should be located in your ".emacs.d" directory.
 ;; Source at https://git.sr.ht/~luxick/emacs-config
 
 (require 'org)

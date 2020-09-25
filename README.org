@@ -551,45 +551,40 @@ elfeed can be extended with various hooks for ease of used
 ** All The Icons
 We want to have some nice looking icons
 #+BEGIN_SRC emacs-lisp
-    (use-package all-the-icons)
+  (use-package all-the-icons)
 #+END_SRC
-
 ** Recentf
 Show recent files in the buffer selection
 #+BEGIN_SRC emacs-lisp
-    (use-package recentf
-      :init (recentf-mode t)
-      :config
-      (add-to-list 'recentf-exclude "\\.emacs.d")
-      (add-to-list 'recentf-exclude ".+tmp......\\.org"))
+  (use-package recentf
+    :init (recentf-mode t)
+    :config
+    (add-to-list 'recentf-exclude "\\.emacs.d")
+    (add-to-list 'recentf-exclude ".+tmp......\\.org"))
 #+END_SRC
-
 ** Rainbow Delimiters
 We want to have some nicely colored delimiters when reading and writing lisp code
 #+BEGIN_SRC emacs-lisp
-    (use-package rainbow-delimiters
-      :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
-
 ** Markdown Mode
 #+BEGIN_SRC emacs-lisp
-     (use-package markdown-mode
-       :mode ("\\.md$" . gfm-mode)
-       :config
-       (when (executable-find "pandoc")
-         (setq markdown-command "pandoc -f markdown -t html")))
+  (use-package markdown-mode
+    :mode ("\\.md$" . gfm-mode)
+    :config
+    (when (executable-find "pandoc")
+      (setq markdown-command "pandoc -f markdown -t html")))
 #+END_SRC
-
 ** Duplicate Thing
-Quick bind to ~C-c u ~ to duplicate the current line
+Quick bind to ~C-c u~  to duplicate the current line
 #+BEGIN_SRC emacs-lisp
-     (use-package duplicate-thing
-       :bind (("C-c u" . duplicate-thing)))
+  (use-package duplicate-thing
+    :bind (("C-c u" . duplicate-thing)))
 #+END_SRC
-
 ** ACE Window
 Small package to quickly switch tiled windows.
-Use ~M-p~ to quickly switch.
+Use ~M-o~ to quickly switch.
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :bind (("M-o" . 'ace-window))
@@ -604,14 +599,12 @@ HTML Exporter for org-mode
 #+BEGIN_SRC emacs-lisp
      (use-package htmlize)
 #+END_SRC
-
 ** Autocompletion
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :config
     (global-company-mode))
 #+END_SRC
-
 ** vterm
 [[https://github.com/akermu/emacs-libvterm][vterm]] is a superiour alternative to the integrated eshell, shell or term modes.
 The packages only works on linux and reuqires that emacs is compiled with module support (the ~module-file-suffix~ variable will be filled).

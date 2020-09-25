@@ -68,7 +68,6 @@ A simple funtion to open this file for quick editing.
        (interactive)
        (find-file "~/.emacs.d/README.org"))
 #+END_SRC
-
 ** Reformat a whole buffer
 Reindet the whole buffer with ~F12~
 #+BEGIN_SRC emacs-lisp
@@ -78,7 +77,6 @@ Reindet the whole buffer with ~F12~
              (indent-region (point-min) (point-max) nil)))
          (global-set-key [f12] 'indent-buffer)
 #+END_SRC
-
 ** Split windows and  immediately switch to it
 #+BEGIN_SRC emacs-lisp
      (defun split-right-and-enter ()
@@ -93,7 +91,6 @@ Reindet the whole buffer with ~F12~
        (split-window-below)
        (other-window 1))
 #+END_SRC
-
 ** Quick buffer switching
 #+BEGIN_SRC emacs-lisp
      (defun switch-to-previous-buffer ()
@@ -101,7 +98,6 @@ Reindet the whole buffer with ~F12~
        (interactive)
        (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
-
 ** Fold all except the current heading
 With this all other subtrees in the buffer van be collapsed, leaving only the subtree at the point expanded
 #+BEGIN_SRC emacs-lisp
@@ -126,22 +122,6 @@ And it should be accessible with a quick keystroke:
   (global-set-key "\M-s" 'org-show-current-heading-tidily)
 #+END_SRC
 
-** Load file content as string
-#+BEGIN_SRC emacs-lisp
-  (defun get-string-from-file (filePath)
-    "Return filePath's file content."
-    (with-temp-buffer
-      (insert-file-contents filePath)
-      (buffer-string)))
-#+END_SRC
-** Load all files in a directory
-#+BEGIN_SRC emacs-lisp
-  (defun load-directory (dir)
-    (let ((load-it (lambda (f)
-                     (load-file (concat (file-name-as-directory dir) f)))
-                   ))
-      (mapc load-it (directory-files dir nil "\\.el$"))))
-#+END_SRC
 * Theming
 Apply a nice looking theme.
 
@@ -801,8 +781,7 @@ Some customization for writing elisp
      (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
      (unbind-key "C-x C-r") ;; as is find-file-read-only
 #+END_SRC
-
-* Load ~personal.el~
+* Load additional files
 All information about the current user should reside in the ~personal.el~ file.
 This file contains personal information like name, email or other identifying information.
 This file should contain definitions, that are the same on every device, but sould not be commited to a repository.
@@ -810,7 +789,7 @@ This file should contain definitions, that are the same on every device, but sou
   (setq personal-file "~/.emacs.d/personal.el")
   (load personal-file 'noerror)
 #+END_SRC
-* Load ~custom.el~
+
 Load a custom file from the emacs home dir.
 This file is specific to the machine emacs runs on.
 It conatins customizations and file locations that are machine dependend.

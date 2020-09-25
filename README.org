@@ -305,6 +305,7 @@ The most important parts are configuring key bindings to quickly access the file
           org-link-file-path-type 'relative
           org-image-actual-width nil           ; with this image sizes can be set per image, with an attribute
           org-display-inline-images t
+          org-hide-emphasis-markers t
           )
     (setcar (nthcdr 4 org-emphasis-regexp-components) 4)
 

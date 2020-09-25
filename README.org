@@ -613,8 +613,13 @@ Quick bind to ~C-c u ~ to duplicate the current line
 Small package to quickly switch tiled windows.
 Use ~M-p~ to quickly switch.
 #+BEGIN_SRC emacs-lisp
-     (use-package ace-window
-       :bind (("M-o" . 'ace-window)))
+  (use-package ace-window
+    :bind (("M-o" . 'ace-window))
+    :config
+    (custom-set-faces
+     '(aw-leading-char-face
+       ((t (:inherit ace-jump-face-foreground :height 3.0))))
+     ))
 #+END_SRC
 ** htmlize
 HTML Exporter for org-mode

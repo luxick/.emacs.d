@@ -6,7 +6,30 @@ Points of intrest:
 - Machine specific settings are stored in a separate ~custom.el~ file.
 - Both files are loaded automatically.
 - When Exporting HTML from ~org-mode~ the style from the ~org-theme.css~ file is inlined automatically.
-* Set up UI
+* Set up ~use-package~
+State that we will need package support and define a macro for adding package repos to the archives
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (defmacro append-to-list (target suffix)
+    "Append SUFFIX to TARGET in place."
+    `(setq ,target (append ,target ,suffix)))
+
+  ;; add to the package repos
+  (append-to-list package-archives
+                  '(("melpa" . "http://melpa.org/packages/")
+                    ("org-elpa" . "https://orgmode.org/elpa/")))
+  (package-initialize)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+  (use-package gnu-elpa-keyring-update)
+#+END_SRC
+
+* Fix defaults
+** Hide UI elements
 Remove all those UI elements. They do not look good and waste space.
 #+BEGIN_SRC emacs-lisp
   (tool-bar-mode -1)
@@ -15,52 +38,76 @@ Remove all those UI elements. They do not look good and waste space.
   (tooltip-mode -1)
   (fringe-mode -1)
 #+END_SRC
-* Set up package repositories
-** Require package support
-State that we will need package support and define a macro for adding package repos to the archives
+** Disable file backups
+Emacs, loves to clutter directories with backup files.
 #+BEGIN_SRC emacs-lisp
-     (require 'package)
-     (defmacro append-to-list (target suffix)
-      "Append SUFFIX to TARGET in place."
-      `(setq ,target (append ,target ,suffix)))
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+  (setq create-lockfiles nil)
+#+END_SRC
+** Other settings
+#+begin_src emacs-lisp
+  ;; The default encoding should be utf-8 everywhere
+  (prefer-coding-system 'utf-8)
+
+  ;; All "Yes or No" questions can be shortend to "y or n".
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; No more startup messages and screens
+  (setq inhibit-startup-screen t)
+  (setq initial-scratch-message nil)
+  (defun display-startup-echo-area-message ()
+    (message "Welcome Back!"))
+
+  ;; Highlight matching braces
+  (show-paren-mode t)
+
+  ;; cua-mode. Like any other editor
+  (cua-mode t)
+
+  ;; Configure the cursor
+  (setq-default
+   cursor-type 'bar
+   indent-tabs-mode nil
+   cursor-in-non-selected-windows nil)
+
+  ;; Default column with
+  (set-fill-column 95)
+
+  ;; Start up in the home directory
+  (setq default-directory "~/")
+
+  ;; Make C-k always kill the whole line
+  (setq kill-whole-line t)
+
+  ;; Do not ding. Ever.
+  (setq ring-bell-function 'ignore)
+
+  ;; Dialogues always go in the modeline.
+  (setq  use-dialog-box nil)
+#+end_src
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-x k"      'kill-buffer-with-prejudice)
+  (bind-key "C-x C-k"    'kill-buffer-and-window)
+  (bind-key "M-p"        'switch-to-previous-buffer)
+  (bind-key "M-i"        'delete-indentation)
+  (bind-key "C-+"        'text-scale-increase)
+  (bind-key "C--"        'text-scale-decrease)
+  ;; buffer-list is not a good default
+  (bind-key "C-x C-b"    'ibuffer)
+  (bind-key "C-c n"      'display-line-numbers-mode)
 #+END_SRC
 
-** Add package repos
+Unbind useless keys.
 #+BEGIN_SRC emacs-lisp
-     (append-to-list package-archives
-                     '(("melpa" . "http://melpa.org/packages/")
-                       ("org-elpa" . "https://orgmode.org/elpa/")))
+     (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
+     (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
+     (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
+     (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
+     (unbind-key "C-x C-r") ;; as is find-file-read-only
 #+END_SRC
-
-** Ensure ~use-package~ command is present
-#+BEGIN_SRC emacs-lisp
-  (package-initialize)
-
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-
-  (require 'use-package)
-
-  (setq use-package-always-ensure t)
-
-  (use-package gnu-elpa-keyring-update)
-#+END_SRC
-
-* Set Backup Location
-Emacs, by default clutters the file system with backup files.
-We do not want them to be right next to the actual file, so we tell emacs to use dedicated directory to store them.
-While we are at it, we also set rule for how many version emacs should keep as backups.
-#+BEGIN_SRC emacs-lisp
-    (setq backup-directory-alist `(("." . "~/.emacs-backup")))
-    (setq backup-by-copying t)
-    (setq delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 2
-      version-control t)
-#+END_SRC
-
-* Define useful functions
+* Useful functions
 ** Edit the config file
 A simple funtion to open this file for quick editing.
 #+BEGIN_SRC emacs-lisp
@@ -77,19 +124,21 @@ Reindet the whole buffer with ~F12~
              (indent-region (point-min) (point-max) nil)))
          (global-set-key [f12] 'indent-buffer)
 #+END_SRC
-** Split windows and  immediately switch to it
+** Split windows and immediately switch to it
 #+BEGIN_SRC emacs-lisp
      (defun split-right-and-enter ()
        "Split the window to the right and enter it."
        (interactive)
        (split-window-right)
        (other-window 1))
+    (bind-key "C-c 3"      'split-right-and-enter)
 
      (defun split-below-and-enter ()
        "Split the window down and enter it."
        (interactive)
        (split-window-below)
        (other-window 1))
+    (bind-key "C-c 2"      'split-below-and-enter)
 #+END_SRC
 ** Quick buffer switching
 #+BEGIN_SRC emacs-lisp
@@ -98,33 +147,8 @@ Reindet the whole buffer with ~F12~
        (interactive)
        (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
-** Fold all except the current heading
-With this all other subtrees in the buffer van be collapsed, leaving only the subtree at the point expanded
-#+BEGIN_SRC emacs-lisp
-  (defun org-show-current-heading-tidily ()
-    (interactive)  ;Inteactive
-    "Show next entry, keeping other entries closed."
-    (if (save-excursion (end-of-line) (outline-invisible-p))
-        (progn (org-show-entry) (show-children))
-      (outline-back-to-heading)
-      (unless (and (bolp) (org-on-heading-p))
-        (org-up-heading-safe)
-        (hide-subtree)
-        (error "Boundary reached"))
-      (org-overview)
-      (org-reveal t)
-      (org-show-entry)
-      (show-children)))
-#+END_SRC
-
-And it should be accessible with a quick keystroke:
-#+BEGIN_SRC emacs-lisp
-  (global-set-key "\M-s" 'org-show-current-heading-tidily)
-#+END_SRC
-
 * Theming
 Apply a nice looking theme.
-
 #+BEGIN_SRC emacs-lisp
   ;; Light Theme
   (use-package modus-operandi-theme)
@@ -141,8 +165,8 @@ Apply a nice looking theme.
                       '(internal-border-width . 10)
                       '(font . "Roboto Mono Light 10"))))
 #+END_SRC
-Use a nice looking modeline package
 
+Use a nice looking modeline package
 #+BEGIN_SRC emacs-lisp
   (use-package telephone-line)
   (telephone-line-mode 1)
@@ -502,10 +526,6 @@ Treemacs makes navigating folders and files much easier. This is the default con
               treemacs-tag-follow-delay              1.5
               treemacs-width                         35)
 
-        ;; The default width and height of the icons is 22 pixels. If you are
-        ;; using a Hi-DPI display, uncomment this to double the icon size.
-        ;;(treemacs-resize-icons 44)
-
         (treemacs-follow-mode t)
         (treemacs-filewatch-mode t)
         (treemacs-fringe-indicator-mode t)
@@ -548,7 +568,7 @@ elfeed can be extended with various hooks for ease of used
             (elfeed-make-tagger :before "2 weeks ago"
                                 :remove 'unread))
 #+END_SRC
-* Additional Package Imports
+* Misc packages
 ** All The Icons
 We want to have some nice looking icons
 #+BEGIN_SRC emacs-lisp
@@ -578,7 +598,7 @@ We want to have some nicely colored delimiters when reading and writing lisp cod
       (setq markdown-command "pandoc -f markdown -t html")))
 #+END_SRC
 ** Duplicate Thing
-Quick bind to ~C-c u~  to duplicate the current line
+Quick bind to ~C-c u~ to duplicate the current line
 #+BEGIN_SRC emacs-lisp
   (use-package duplicate-thing
     :bind (("C-c u" . duplicate-thing)))
@@ -642,98 +662,7 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 #+BEGIN_SRC emacs-lisp
 (use-package ag)
 #+END_SRC
-* Set Variables
-** General Emacs Options
-#+BEGIN_SRC emacs-lisp
-     (setq
-       compilation-always-kill t                ; Never prompt to kill a compilation session.
-       compilation-scroll-output 'first-error   ; Always scroll to the bottom.
-       make-backup-files nil                    ; No backups, thanks.
-       auto-save-default nil                    ; Or autosaves. What's the difference between autosaves and backups?
-       create-lockfiles nil                     ; Emacs sure loves to put lockfiles everywhere.
-       default-directory "~/"                   ; Home sweet home.
-       inhibit-startup-screen t                 ; No need to see GNU agitprop.
-       kill-whole-line t                        ; Lets C-k delete the whole line
-       require-final-newline t                  ; Auto-insert trailing newlines.
-       ring-bell-function 'ignore               ; Do not ding. Ever.
-       use-dialog-box nil                       ; Dialogues always go in the modeline.
-       initial-scratch-message nil              ; SHUT UP SHUT UP SHUT UP
-       save-interprogram-paste-before-kill t    ; preserve paste to system ring
-       enable-recursive-minibuffers t           ; don't fucking freak out if I use the minibuffer twice
-       sentence-end-double-space nil            ; are you fucking kidding me with this shit
-       confirm-kill-processes nil               ; don't whine at me when I'm quitting.
-       mark-even-if-inactive nil                ; prevent really unintuitive undo behavior
-       load-prefer-newer t                      ; load newest file version available
-       )
-#+END_SRC
-
-** Read environment variables from the shell
-When not running on a windows system, we can use the env variables in emacs
-#+BEGIN_SRC emacs-lisp
-  (use-package exec-path-from-shell
-    :if (not (eq system-type 'windows-nt))
-    :config
-    (exec-path-from-shell-initialize))
-#+END_SRC
-
-** Show the current filename in titlebar
-#+BEGIN_SRC emacs-lisp
-     (setq frame-title-format
-           '((:eval user-login-name) "@" (:eval (system-name)) ": " (:eval (if (buffer-file-name)
-                                                                                (abbreviate-file-name (buffer-file-name))
-                                                                              "%b")) " [%*]"))
-#+END_SRC
-
-** Default encoding
-#+BEGIN_SRC emacs-lisp
-     (prefer-coding-system 'utf-8)
-#+END_SRC
-
-** Shorten "yes or no" questions
-#+BEGIN_SRC emacs-lisp
-     (defalias 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
-** Always highlight the current line
-#+BEGIN_SRC emacs-lisp
-   (global-hl-line-mode t)
-#+END_SRC
-
-** Always highlight matching braces
-#+BEGIN_SRC emacs-lisp
-   (show-paren-mode t)
-#+END_SRC
-
-** Allow selection override
-#+BEGIN_SRC emacs-lisp
-   (delete-selection-mode t)
-#+END_SRC
-
-** Behave like a normal text editor
-Changed: No more CUA, ~C-c~ is used in to many places that are broken by cua-mode
-#+BEGIN_SRC emacs-lisp
-  (cua-mode t)
-#+END_SRC
-
-** Set cursor and indet mode
-#+BEGIN_SRC emacs-lisp
-     (setq-default
-       cursor-type 'bar
-       indent-tabs-mode nil
-       cursor-in-non-selected-windows nil)
-#+END_SRC
-
-** Set default column width
-#+BEGIN_SRC emacs-lisp
-   (set-fill-column 95)
-#+END_SRC
-
-* Hooks
-** Remove trailing whitespace on file close
-#+BEGIN_SRC emacs-lisp
-     (add-hook 'before-save-hook 'delete-trailing-whitespace)
-#+END_SRC
-
+* Programming
 ** Elisp
 Some customization for writing elisp
 #+BEGIN_SRC emacs-lisp
@@ -744,36 +673,6 @@ Some customization for writing elisp
        (auto-composition-mode nil))
 
      (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
-#+END_SRC
-* Global Key Bindings
-#+BEGIN_SRC emacs-lisp
-    (bind-key "C-x k"      'kill-buffer-with-prejudice)
-    (bind-key "C-x C-k"    'kill-buffer-and-window)
-    (bind-key "C-c 5"      'query-replace-regexp) ;; stupid vestigial binding
-    (bind-key "M-/"        'hippie-expand)
-    (bind-key "C-c \\"     'align-regexp)
-    (bind-key "C-c m"      'compile)
-    (bind-key "C-c 3"      'split-right-and-enter)
-    (bind-key "C-c 2"      'split-below-and-enter)
-    (bind-key "M-p"        'switch-to-previous-buffer)
-    (bind-key "C-c /"      'comment-or-uncomment-region)
-    (bind-key "C-c x"      'ESC-prefix)
-    (bind-key "M-i"        'delete-indentation)
-    (bind-key "C-+"        'text-scale-increase)
-    (bind-key "C--"	   'text-scale-decrease)
-    (bind-key "C-<"        'beginning-of-buffer)
-    (bind-key "C->"        'end-of-buffer)
-    (bind-key "C-x C-b"    'ibuffer) ;; buffer-list is not a good default
-    (bind-key "C-c n"      'line-number-mode)
-#+END_SRC
-
-** Unbind some default key bindings
-#+BEGIN_SRC emacs-lisp
-     (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
-     (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
-     (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
-     (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
-     (unbind-key "C-x C-r") ;; as is find-file-read-only
 #+END_SRC
 * Load additional files
 All information about the current user should reside in the ~personal.el~ file.

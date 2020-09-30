@@ -160,10 +160,14 @@ Apply a nice looking theme.
   ;; Light Theme
   (use-package modus-operandi-theme)
 
-  ;; Syntax highlighing
+  ;; Configure modus theme
   (setq modus-operandi-theme-faint-syntax t)
+  (setq modus-operandi-theme-org-blocks 'rainbow)
+  (setq modus-operandi-theme-completions 'moderate)
+  (setq modus-operandi-theme-bold-constructs t)
+  (setq modus-operandi-theme-scale-headings t)
 
-  (load-theme 'modus-operandi t)  
+  (load-theme 'modus-operandi t)
 #+END_SRC
 
 Set up the default frame look.
@@ -186,6 +190,7 @@ Use a nice looking modeline package
   (use-package telephone-line)
   (telephone-line-mode 1)
 #+END_SRC
+
 * Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
 ** Use Ivy
@@ -667,5 +672,5 @@ This file is specific to the machine emacs runs on.
 It conatins customizations and file locations that are machine dependend.
 #+BEGIN_SRC emacs-lisp
   (setq custom-file "~/.emacs.d/custom.el")
-  ;;(load custom-file 'noerror)
+  (load custom-file 'noerror)
 #+END_SRC

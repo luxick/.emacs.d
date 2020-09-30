@@ -155,22 +155,54 @@ The link dump is the file to throw all links for later reading in.
     (find-file lux/link-dump))
 #+END_SRC
 * Theming
-Apply a nice looking theme.
+*Apply a nice looking theme*
 #+BEGIN_SRC emacs-lisp
   ;; Light Theme
   (use-package modus-operandi-theme)
+  (use-package modus-vivendi-theme)
 
-  ;; Configure modus theme
-  (setq modus-operandi-theme-faint-syntax t)
-  (setq modus-operandi-theme-org-blocks 'rainbow)
-  (setq modus-operandi-theme-completions 'moderate)
-  (setq modus-operandi-theme-bold-constructs t)
-  (setq modus-operandi-theme-scale-headings t)
+  ;; Configuration for both themes
+  (defmacro modus-themes-format-sexp (sexp &rest objects)
+    `(eval (read (format ,(format "%S" sexp) ,@objects))))
 
-  (load-theme 'modus-operandi t)
+  (dolist (theme '("operandi" "vivendi"))
+    (modus-themes-format-sexp
+     (defun modus-%1$s-theme-load ()
+       (setq modus-%1$s-theme-slanted-constructs t
+             modus-%1$s-theme-bold-constructs t
+             modus-%1$s-theme-faint-syntax t
+             modus-%1$s-theme-prompts 'subtle
+             modus-%1$s-theme-completions 'moderate
+             modus-%1$s-theme-org-blocks 'rainbow
+             modus-%1$s-theme-scale-headings t
+             modus-%1$s-theme-scale-1 1.1
+             modus-%1$s-theme-scale-2 1.15
+             modus-%1$s-theme-scale-3 1.21
+             modus-%1$s-theme-scale-4 1.27
+             modus-%1$s-theme-scale-5 1.33)
+       (load-theme 'modus-%1$s t))
+     theme))
 #+END_SRC
 
-Set up the default frame look.
+*Allow switching between light and dark mode*
+#+begin_src emacs-lisp
+  (defun modus-themes-toggle ()
+    "Toggle between `modus-operandi' and `modus-vivendi' themes."
+    (interactive)
+    (if (eq (car custom-enabled-themes) 'modus-operandi)
+        (progn
+          (disable-theme 'modus-operandi)
+          (modus-vivendi-theme-load))
+      (disable-theme 'modus-vivendi)
+      (modus-operandi-theme-load)))
+#+end_src
+
+*Call the swich function once to load the light theme*
+#+begin_src emacs-lisp
+  (modus-themes-toggle)
+#+end_src
+
+*Set up the default frame look*
 #+begin_src emacs-lisp
   (setq default-frame-alist
         (append (list '(width  . 90) '(height . 50)
@@ -178,14 +210,14 @@ Set up the default frame look.
                       '(internal-border-width . 5))))
 #+end_src
 
-Configure the Fonts
+*Configure the Fonts*
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :font "Roboto Mono-11")
   (set-face-attribute 'fixed-pitch nil :font "Roboto Mono-11")
   (set-face-attribute 'variable-pitch nil :font "Roboto-11")
 #+end_src
 
-Use a nice looking modeline package
+*Use a nice looking modeline package*
 #+BEGIN_SRC emacs-lisp
   (use-package telephone-line)
   (telephone-line-mode 1)

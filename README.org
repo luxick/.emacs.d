@@ -27,6 +27,11 @@ State that we will need package support and define a macro for adding package re
   (use-package gnu-elpa-keyring-update)
 #+END_SRC
 
+Packages that are manually installed should be saved under =.emacs.d/packages=
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/packages/")
+#+end_src
+
 * Fix Defaults
 ** Hide UI elements
 Remove all those UI elements. They do not look good and waste space.
@@ -84,6 +89,9 @@ Emacs sure loves to clutter directories with backup files.
 
   ;; Dialogues always go in the modeline.
   (setq  use-dialog-box nil)
+
+  ;; Better line wraping
+  (global-visual-line-mode 1)
 #+end_src
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -154,6 +162,25 @@ The link dump is the file to throw all links for later reading in.
     (interactive)
     (find-file lux/link-dump))
 #+END_SRC
+
+** Variable Pitch Mode
+This custom version of =variable-pitch-mode= allows to mix variable and fixed fonts in the same buffer. This is very useful for org buffers with code blocks in them. This is a slight variation of [[https://protesilaos.com/dotemacs/][Protesilaos Stavrous]] version.
+
+#+begin_src emacs-lisp
+  (use-package face-remap
+    :diminish buffer-face-mode            ; the actual mode
+    :commands lux/variable-pitch-mode
+    :config
+    (define-minor-mode lux/variable-pitch-mode
+      "Toggle `variable-pitch-mode', except for `prog-mode'."
+      :init-value nil
+      :global nil
+      (if lux/variable-pitch-mode
+          (unless (derived-mode-p 'prog-mode)
+            (variable-pitch-mode 1))
+        (variable-pitch-mode -1))))
+#+end_src
+
 * Theming
 *Apply a nice looking theme*
 #+BEGIN_SRC emacs-lisp
@@ -173,6 +200,7 @@ The link dump is the file to throw all links for later reading in.
              modus-%1$s-theme-faint-syntax t
              modus-%1$s-theme-prompts 'subtle
              modus-%1$s-theme-completions 'moderate
+             modus-%1$s-theme-diffs 'fg-only
              modus-%1$s-theme-org-blocks 'rainbow
              modus-%1$s-theme-scale-headings t
              modus-%1$s-theme-scale-1 1.1
@@ -223,9 +251,29 @@ The link dump is the file to throw all links for later reading in.
   (telephone-line-mode 1)
 #+END_SRC
 
-* Ivy
+* Dired
+Use the imporved =dired+= package instead of the buildin one.
+
+#+begin_src emacs-lisp
+  (require 'dired+)
+
+  ;; Make dired+ reuse a single buffer for visiting directories
+  (diredp-toggle-find-file-reuse-dir 1)
+
+  ;; Make the mouse click also reuse the buffer
+  (define-key dired-mode-map [mouse-2] 'diredp-mouse-find-file-reuse-dir-buffer)
+
+  ;; Add better sorting with Dired Sort Menu
+  (require 'dired-sort-menu+)
+
+  ;; Set defauls for directory listings
+  (setq ls-lisp-ignore-case t)
+  (setq ls-lisp-dirs-first t)
+#+end_src
+
+* Completion
+** Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
-** Use Ivy
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :diminish
@@ -258,7 +306,7 @@ Sort commands by recency in ivy windows
   (use-package smex)
 #+END_SRC
 
-* Counsel
+** Counsel
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
     :after ivy
@@ -266,13 +314,19 @@ Sort commands by recency in ivy windows
     :bind (("C-c ;" . counsel-M-x)
            ("C-c U" . counsel-unicode-char)
            ("C-c i" . counsel-imenu)
-           ("C-x f" . counsel-find-file)
            ("C-c y" . counsel-yank-pop)
            ("C-c r" . counsel-recentf)
            :map ivy-minibuffer-map
            ("C-r" . counsel-minibuffer-history))
     :diminish)
 #+END_SRC
+
+** Ido
+#+begin_src emacs-lisp
+  (use-package ido
+    :config (ido-mode 1)
+    :bind (("C-x f" . ido-find-file)))
+#+end_src
 
 * Magit
 Magit is THE go to package for using git in emacs.

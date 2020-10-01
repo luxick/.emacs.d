@@ -6,6 +6,7 @@ Points of intrest:
 - Machine specific settings are stored in a separate ~custom.el~ file.
 - Both files are loaded automatically.
 - When Exporting HTML from ~org-mode~ the style from the ~org-theme.css~ file is inlined automatically.
+
 * Set up ~use-package~
 State that we will need package support and define a macro for adding package repos to the archives
 #+BEGIN_SRC emacs-lisp
@@ -170,6 +171,7 @@ This custom version of =variable-pitch-mode= allows to mix variable and fixed fo
   (use-package face-remap
     :diminish buffer-face-mode            ; the actual mode
     :commands lux/variable-pitch-mode
+    :hook (text-mode . lux/variable-pitch-mode)
     :config
     (define-minor-mode lux/variable-pitch-mode
       "Toggle `variable-pitch-mode', except for `prog-mode'."
@@ -179,6 +181,14 @@ This custom version of =variable-pitch-mode= allows to mix variable and fixed fo
           (unless (derived-mode-p 'prog-mode)
             (variable-pitch-mode 1))
         (variable-pitch-mode -1))))
+#+end_src
+
+* Fonts
+Set up the fonts to use
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :font "Ubuntu Mono-14")
+  (set-face-attribute 'fixed-pitch nil :font "Ubuntu Mono-14")
+  (set-face-attribute 'variable-pitch nil :font "Ubuntu Light-14")
 #+end_src
 
 * Theming
@@ -230,6 +240,12 @@ This custom version of =variable-pitch-mode= allows to mix variable and fixed fo
   (modus-themes-toggle)
 #+end_src
 
+*Use a nice looking modeline package*
+#+BEGIN_SRC emacs-lisp
+  (use-package telephone-line)
+  (telephone-line-mode 1)
+#+END_SRC
+
 *Set up the default frame look*
 #+begin_src emacs-lisp
   (setq default-frame-alist
@@ -237,19 +253,6 @@ This custom version of =variable-pitch-mode= allows to mix variable and fixed fo
                       '(vertical-scroll-bars . nil)
                       '(internal-border-width . 5))))
 #+end_src
-
-*Configure the Fonts*
-#+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Ubuntu Mono-14")
-  (set-face-attribute 'fixed-pitch nil :font "Ubuntu Mono-14")
-  (set-face-attribute 'variable-pitch nil :font "Ubuntu Light-14")
-#+end_src
-
-*Use a nice looking modeline package*
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line)
-  (telephone-line-mode 1)
-#+END_SRC
 
 * Dired
 Use the imporved =dired+= package instead of the buildin one.
@@ -267,8 +270,31 @@ Use the imporved =dired+= package instead of the buildin one.
   (require 'dired-sort-menu+)
 
   ;; Set defauls for directory listings
+  (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-ignore-case t)
   (setq ls-lisp-dirs-first t)
+  (setq dired-listing-switches "-al --group-directories-first")
+
+  ;; More dired goodies
+  (require 'dired-x)
+
+  ;; Make it so that dotfiles are omitted, but not the "." and ".." at the top of the listing
+  (setq dired-omit-files "^\\.\\w.*$")
+
+  (add-hook 'dired-load-hook
+            (lambda ()
+              (load "dired-x")
+              ;; Set dired-x global variables here.  For example:
+              ;; (setq dired-guess-shell-gnutar "gtar")
+              ;; (setq dired-x-hands-off-my-keys nil)
+              ))
+  (add-hook 'dired-mode-hook
+            (lambda ()
+              ;; Set dired-x buffer-local variables here.
+              ;; Start with hidden files, well, *hidden*
+              (dired-omit-mode 1)
+              (local-set-key (kbd "C-.") 'dired-omit-mode)
+              ))
 #+end_src
 
 * Completion

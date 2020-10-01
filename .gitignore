@@ -25,3 +25,4 @@ server
 *.lock
 personal.el
 README.el
+ido.*

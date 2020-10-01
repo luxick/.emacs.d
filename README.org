@@ -240,9 +240,9 @@ This custom version of =variable-pitch-mode= allows to mix variable and fixed fo
 
 *Configure the Fonts*
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Roboto Mono-11")
-  (set-face-attribute 'fixed-pitch nil :font "Roboto Mono-11")
-  (set-face-attribute 'variable-pitch nil :font "Roboto-11")
+  (set-face-attribute 'default nil :font "Ubuntu Mono-14")
+  (set-face-attribute 'fixed-pitch nil :font "Ubuntu Mono-14")
+  (set-face-attribute 'variable-pitch nil :font "Ubuntu-14")
 #+end_src
 
 *Use a nice looking modeline package*

@@ -119,38 +119,49 @@ Unbind useless keys.
 #+END_SRC
 
 * Useful Functions
-** Edit the config file
+** Edit This File
 A simple funtion to open this file for quick editing.
 #+BEGIN_SRC emacs-lisp
      (defun edit-config ()
        (interactive)
        (find-file "~/.emacs.d/README.org"))
 #+END_SRC
-** Reformat a whole buffer
+
+** Reformating
 Reindet the whole buffer with ~F12~
 #+BEGIN_SRC emacs-lisp
-     (defun indent-buffer ()
-           (interactive)
-           (save-excursion
-             (indent-region (point-min) (point-max) nil)))
-         (global-set-key [f12] 'indent-buffer)
+  (defun lux/indent-buffer ()
+    "Reindents the whole buffer"
+    (interactive)
+    (save-excursion
+      (indent-region (point-min) (point-max) nil)))
+  (global-set-key [f12] 'lux/indent-buffer)
 #+END_SRC
-** Split windows and immediately switch to it
+
+** Window Splitting
+These are functions for splitting windows and move the cursor over immediately.
 #+BEGIN_SRC emacs-lisp
-     (defun split-right-and-enter ()
+     (defun lux/split-right-and-enter ()
        "Split the window to the right and enter it."
        (interactive)
        (split-window-right)
        (other-window 1))
-    (bind-key "C-c 3"      'split-right-and-enter)
+    (bind-key "M-3" 'lux/split-right-and-enter)
 
-     (defun split-below-and-enter ()
+     (defun lux/split-below-and-enter ()
        "Split the window down and enter it."
        (interactive)
        (split-window-below)
        (other-window 1))
-    (bind-key "C-c 2"      'split-below-and-enter)
+    (bind-key "M-2" 'lux/split-below-and-enter)
 #+END_SRC
+
+Rebind the default window controls to use "M-*" keys for ease-of-use
+#+begin_src emacs-lisp
+  (bind-key "M-1" 'delete-other-windows)
+  (bind-key "M-0" 'delete-window)
+#+end_src
+
 ** Quick buffer switching
 #+BEGIN_SRC emacs-lisp
   (defun switch-to-previous-buffer ()
@@ -158,11 +169,13 @@ Reindet the whole buffer with ~F12~
     (interactive)
     (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
-** Quickly open the links file
-The link dump is the file to throw all links for later reading in.
+
+** The Links File
+The link dump is the file to throw all links for later reading in.Where the file is located should be set in either =personal.el= or =custom.el=.
 #+BEGIN_SRC emacs-lisp
   (defvar lux/link-dump "")
   (defun lux/open-link-dump ()
+    "Open the file with the links"
     (interactive)
     (find-file lux/link-dump))
 #+END_SRC
@@ -226,7 +239,7 @@ This is a minor mode for keeping the cursor at the center of the screen while sc
         (olivetti-mode -1)
         (lux/center-scroll-mode -1))))
 
-  (bind-key "C-c o" 'lux/focus-mode)
+  (bind-key "C-c f" 'lux/focus-mode)
 #+end_src
 
 * Fonts
@@ -302,7 +315,7 @@ Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] fon
 #+end_src
 
 * Dired
-Use the imporved =dired+= package instead of the buildin one.
+Use the imporoved =dired+= package to extend of the buildin =dired=.
 #+begin_src emacs-lisp
   (require 'dired+)
 
@@ -399,6 +412,13 @@ Sort commands by recency in ivy windows
     :config (ido-mode 1)
     :bind (("C-x f" . ido-find-file)))
 #+end_src
+
+** Autocompletion
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-complete
+    :config
+    (ac-config-default))
+#+END_SRC
 
 * Magit
 Magit is THE go to package for using git in emacs.
@@ -537,7 +557,7 @@ This will make sure a self contained single HTML file is created.
   (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)
 #+END_SRC
 
-** Org Mode Bling
+** Org Mode Bling<
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
@@ -625,26 +645,27 @@ Here we define templates we want to use to quickly capture stuff and automatical
 * Treemacs
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.
 #+BEGIN_SRC emacs-lisp
-    (use-package treemacs
-      :defer t
-      :init
-      (with-eval-after-load 'winum
-        (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-      :config
-      (progn
-        (setq treemacs-show-hidden-files t
-              treemacs-sorting 'alphabetic-desc
-              treemacs-width 35)
+  (use-package treemacs
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-show-hidden-files t
+            treemacs-sorting 'alphabetic-desc
+            treemacs-width 35)
 
-        (treemacs-filewatch-mode t)
-        (treemacs-toggle-show-dotfiles))
-      :bind
-      (:map global-map
-            ("C-x t t" . treemacs)))
+      (treemacs-filewatch-mode t)
+      (treemacs-toggle-show-dotfiles))
+    :bind
+    (:map global-map
+          ("C-x t t" . treemacs)
+          ("M-9"     . treemacs-select-window)))
 
-    (use-package treemacs-magit
-      :after treemacs magit
-      :ensure t)
+  (use-package treemacs-magit
+    :after treemacs magit
+    :ensure t)
 #+END_SRC
 
 * Elfeed
@@ -714,17 +735,13 @@ Use ~M-o~ to quickly switch.
        ((t (:inherit ace-jump-face-foreground :height 3.0))))
      ))
 #+END_SRC
+
 ** htmlize
 HTML Exporter for org-mode
 #+BEGIN_SRC emacs-lisp
      (use-package htmlize)
 #+END_SRC
-** Autocompletion
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-    :config
-    (global-company-mode))
-#+END_SRC
+
 ** vterm
 [[https://github.com/akermu/emacs-libvterm][vterm]] is a superiour alternative to the integrated eshell, shell or term modes.
 The packages only works on linux and reuqires that emacs is compiled with module support (the ~module-file-suffix~ variable will be filled).
@@ -761,14 +778,15 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 ** Elisp
 Some customization for writing elisp
 #+BEGIN_SRC emacs-lisp
-     (defun my-elisp-mode-hook ()
-       "My elisp customizations."
-       (electric-pair-mode 1)
-       (add-hook 'before-save-hook 'check-parens nil t)
-       (auto-composition-mode nil))
+  (defun my-elisp-mode-hook ()
+    "My elisp customizations."
+    (electric-pair-local-mode 1)
+    (add-hook 'before-save-hook 'check-parens nil t)
+    (auto-composition-mode nil))
 
-     (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
+  (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 #+END_SRC
+
 * Load additional files
 All information about the current user should reside in the ~personal.el~ file.
 This file contains personal information like name, email or other identifying information.
@@ -785,3 +803,4 @@ It conatins customizations and file locations that are machine dependend.
   (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file 'noerror)
 #+END_SRC
+

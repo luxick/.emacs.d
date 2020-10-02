@@ -1,4 +1,3 @@
-it
 #+TITLE: luxicks Emacs Configuration
 This is my configuration for the emacs editor.
 

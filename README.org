@@ -1,4 +1,5 @@
 #+TITLE: luxicks Emacs Configuration
+#+PROPERTY: header-args :results silent
 This is my configuration for the emacs editor.
 
 Points of intrest:
@@ -229,11 +230,11 @@ This is a minor mode for keeping the cursor at the center of the screen while sc
 #+end_src
 
 * Fonts
-Set up the fonts to use
+Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] font family.
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Ubuntu Mono-14")
-  (set-face-attribute 'fixed-pitch nil :font "Ubuntu Mono-14")
-  (set-face-attribute 'variable-pitch nil :font "Ubuntu Light-14")
+  (set-face-attribute 'default nil :font "Iosevka Light-12")
+  (set-face-attribute 'fixed-pitch nil :font "Iosevka Light-12")
+  (set-face-attribute 'variable-pitch nil :font "Iosevka Aile Light-12")
 #+end_src
 
 * Theming
@@ -635,7 +636,6 @@ Treemacs makes navigating folders and files much easier. This is the default con
               treemacs-sorting 'alphabetic-desc
               treemacs-width 35)
 
-        (treemacs-follow-mode t)
         (treemacs-filewatch-mode t)
         (treemacs-toggle-show-dotfiles))
       :bind

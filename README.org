@@ -672,7 +672,9 @@ Treemacs makes navigating folders and files much easier. This is the default con
 [[https://github.com/skeeto/elfeed][Elfeed]] is an RSS reader for emacs.
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
-    :bind ("C-x w" . 'elfeed))
+    :bind ("C-x w" . 'elfeed)
+    :config
+    (add-hook 'elfeed-show-mode-hook #'lux/focus-mode))
 #+END_SRC
 ** Hooks
 elfeed can be extended with various hooks for ease of used

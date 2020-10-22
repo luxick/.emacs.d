@@ -12,9 +12,10 @@ Points of intrest:
 Throughout this configuration I will use =use-package= to configure packages from melpa and other sources.
 [[https://github.com/jwiegley/use-package][Link to GitHub page]]
 #+BEGIN_SRC emacs-lisp
+  (require 'package)
   ;; Add melpa to the package repos
   (add-to-list 'package-archives
-               '("melpa" . "http://melpa.org/packages/"))
+	       '("melpa" . "http://melpa.org/packages/"))
 
   (package-initialize)
 

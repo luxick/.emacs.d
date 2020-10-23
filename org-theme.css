@@ -392,7 +392,7 @@ h2 {
 }
 
 .title {
-  margin: 0 0 2em 0;
+  margin: 0 0 0.8em 0;
   line-height: 2em;
   border-bottom: 5px solid #EA4C89;
   text-align: center;
@@ -423,6 +423,9 @@ h1, h2, h3, h4, h5, h6 {
 #table-of-contents {
   display: none;
   margin-left: 0.5em;
+}
+#table-of-contents > h2 {
+  margin: 0;
 }
 
 #text-table-of-contents ul {

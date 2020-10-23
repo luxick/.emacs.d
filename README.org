@@ -558,7 +558,25 @@ This will make sure a self contained single HTML file is created.
   (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)
 #+END_SRC
 
-** Org Mode Bling<
+Include images in org files as base64 directly into the HTML
+#+begin_src emacs-lisp
+  (defun replace-in-string (what with in)
+    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
+
+  (defun org-html--format-image (source attributes info)
+    (progn
+      (setq source (replace-in-string "%20" " " source))
+      (format "<img src=\"data:image/%s;base64,%s\"%s />"
+              (or (file-name-extension source) "")
+              (base64-encode-string
+               (with-temp-buffer
+                 (insert-file-contents-literally source)
+                 (buffer-string)))
+              (file-name-nondirectory source))
+      ))
+#+end_src
+
+** Org Mode Bling
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))

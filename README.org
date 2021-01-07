@@ -783,6 +783,18 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 #+BEGIN_SRC emacs-lisp
 (use-package ag)
 #+END_SRC
+
+** Yasnippet
+[[https://github.com/joaotavora/yasnippet][Github]]
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :config
+    (progn
+      (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+      (yas-global-mode 1)))
+#+end_src
+
 * Programming
 ** Elisp
 Some customization for writing elisp

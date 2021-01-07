@@ -672,7 +672,7 @@ Treemacs makes navigating folders and files much easier. This is the default con
     :config
     (progn
       (setq treemacs-show-hidden-files t
-            treemacs-sorting 'alphabetic-desc
+            treemacs-sorting 'alphabetic-asc
             treemacs-width 35)
 
       (treemacs-filewatch-mode t)

@@ -315,48 +315,6 @@ Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] fon
                       '(internal-border-width . 5))))
 #+end_src
 
-* Dired
-Use the imporoved =dired+= package to extend of the buildin =dired=.
-#+begin_src emacs-lisp
-  (require 'dired+)
-
-  ;; Make dired+ reuse a single buffer for visiting directories
-  (diredp-toggle-find-file-reuse-dir 1)
-
-  ;; Make the mouse click also reuse the buffer
-  (define-key dired-mode-map [mouse-2] 'diredp-mouse-find-file-reuse-dir-buffer)
-
-  ;; Add better sorting with Dired Sort Menu
-  (require 'dired-sort-menu+)
-
-  ;; Set defauls for directory listings
-  (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-ignore-case t)
-  (setq ls-lisp-dirs-first t)
-  (setq dired-listing-switches "-al --group-directories-first")
-
-  ;; More dired goodies
-  (require 'dired-x)
-
-  ;; Make it so that dotfiles are omitted, but not the "." and ".." at the top of the listing
-  (setq dired-omit-files "^\\.\\w.*$")
-
-  (add-hook 'dired-load-hook
-            (lambda ()
-              (load "dired-x")
-              ;; Set dired-x global variables here.  For example:
-              ;; (setq dired-guess-shell-gnutar "gtar")
-              ;; (setq dired-x-hands-off-my-keys nil)
-              ))
-  (add-hook 'dired-mode-hook
-            (lambda ()
-              ;; Set dired-x buffer-local variables here.
-              ;; Start with hidden files, well, *hidden*
-              (dired-omit-mode 1)
-              (local-set-key (kbd "C-.") 'dired-omit-mode)
-              ))
-#+end_src
-
 * Completion
 ** Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.

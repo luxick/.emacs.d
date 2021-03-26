@@ -1,0 +1,6 @@
+;; yas-snippet
+# -*- mode: snippet -*-
+# name: Org Html Export with readtheorg_inline
+# key: readtheorg
+# --
+#+SETUPFILE: ~/.emacs.d/org-templates/readtheorg_inline/readtheorg_inline.theme

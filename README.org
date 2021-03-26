@@ -93,6 +93,10 @@ Emacs sure loves to clutter directories with backup files.
   ;; Dialogues always go in the modeline.
   (setq use-dialog-box nil)
 
+  ;; Show tooltips on hover and not in the echo area.
+  ;; Those are often cut of.
+  (tooltip-mode)
+
   ;; Better line wraping
   (global-visual-line-mode 1)
 #+end_src

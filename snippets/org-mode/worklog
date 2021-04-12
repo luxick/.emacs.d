@@ -3,16 +3,13 @@
 # name: worklog
 # key: worklog
 # --
-* `(format-time-string "%Y-%m-%d %a")`$0
-** Tasks / Projekte
+*** `(format-time-string "%Y-%m-%d %a")`$0
+**** Heute [/]
 Keine
 
-** Meetings
+**** Meeting Notizen
 Keine
 
-** Fehler
-Keine
-
-** Notizen
+**** Misc. Notizen
 Keine
 

@@ -247,6 +247,19 @@ This is a minor mode for keeping the cursor at the center of the screen while sc
   (bind-key "C-c f" 'lux/focus-mode)
 #+end_src
 
+** Org show only current subtree
+
+Fold all other subtrees in an org file and show just the current one
+#+begin_src emacs-lisp
+  (defun lux/org-show-just-me (&rest _)
+    "Fold all other trees, then show entire current subtree."
+    (interactive)
+    (org-overview)
+    (org-reveal)
+    (org-show-subtree))
+  (bind-key "C-c m" 'lux/org-show-just-me)
+#+end_src
+
 * Fonts
 Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] font family.
 #+begin_src emacs-lisp

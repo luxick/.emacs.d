@@ -27,3 +27,4 @@ personal.el
 README.el
 ido.*
 eln-cache
+straight/

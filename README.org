@@ -9,27 +9,109 @@ Points of intrest:
 - When Exporting HTML from ~org-mode~ the style from the ~org-theme.css~ file is inlined automatically.
 
 * Set Up use-package
-Throughout this configuration I will use =use-package= to configure packages from melpa and other sources.
-[[https://github.com/jwiegley/use-package][Link to GitHub page]]
+Packages provided by =straight.el= https://github.com/radian-software/straight.el
 #+BEGIN_SRC emacs-lisp
-  (require 'package)
-  ;; Add melpa to the package repos
-  (add-to-list 'package-archives
-	       '("melpa" . "http://melpa.org/packages/"))
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 
   (package-initialize)
+#+end_src
 
-  ;; Install use-package
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-
-  (setq use-package-always-ensure t)
-#+END_SRC
-
-Packages that are manually installed should be saved under =.emacs.d/packages=
+* Theming
+Add the nano package from Github
 #+begin_src emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/packages/")
+  (straight-use-package
+    '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+
+  (setq nano-font-size 12)
+#+end_src
+
+Configure all nano modules 
+#+begin_src emacs-lisp
+;; Default layout (optional)
+(require 'nano-layout)
+
+;; Theming Command line options (this will cancel warning messages)
+(add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
+(add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
+(add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
+(add-to-list 'command-switch-alist '("-no-splash" . (lambda (args))))
+(add-to-list 'command-switch-alist '("-no-help" . (lambda (args))))
+(add-to-list 'command-switch-alist '("-compact" . (lambda (args))))
+
+
+(cond
+ ((member "-default" command-line-args) t)
+ ((member "-dark" command-line-args) (require 'nano-theme-dark))
+ (t (require 'nano-theme-light)))
+
+;; Customize support for 'emacs -q' (Optional)
+;; You can enable customizations by creating the nano-custom.el file
+;; with e.g. `touch nano-custom.el` in the folder containing this file.
+(let* ((this-file  (or load-file-name (buffer-file-name)))
+       (this-dir  (file-name-directory this-file))
+       (custom-path  (concat this-dir "nano-custom.el")))
+  (when (and (eq nil user-init-file)
+             (eq nil custom-file)
+             (file-exists-p custom-path))
+    (setq user-init-file this-file)
+    (setq custom-file custom-path)
+    (load custom-file)))
+
+;; Theme
+(require 'nano-faces)
+(nano-faces)
+
+(require 'nano-theme)
+(nano-theme)
+
+;; Nano session saving (optional)
+(require 'nano-session)
+
+;; Nano header & mode lines (optional)
+(require 'nano-modeline)
+
+;; Nano key bindings modification (optional)
+(require 'nano-bindings)
+
+;; Compact layout (need to be loaded after nano-modeline)
+(when (member "-compact" command-line-args)
+  (require 'nano-compact))
+  
+;; Nano counsel configuration (optional)
+;; Needs "counsel" package to be installed (M-x: package-install)
+;; (require 'nano-counsel)
+
+;; Welcome message (optional)
+(let ((inhibit-message t))
+  (message "Welcome to GNU Emacs / N Λ N O edition")
+  (message (format "Initialization time: %s" (emacs-init-time))))
+
+;; Splash (optional)
+(unless (member "-no-splash" command-line-args)
+  (require 'nano-splash))
+
+;; Help (optional)
+(unless (member "-no-help" command-line-args)
+  (require 'nano-help))
+#+end_src
+
+*Set up the default frame look*
+#+begin_src emacs-lisp
+  (setq default-frame-alist
+        (append (list '(width  . 90) '(height . 50)
+                      '(vertical-scroll-bars . nil)
+                      '(internal-border-width . 5))))
 #+end_src
 
 * Fix Defaults
@@ -268,75 +350,12 @@ Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] fon
   (set-face-attribute 'variable-pitch nil :font "Iosevka Aile Light-12")
 #+end_src
 
-* Theming
-*Apply a nice looking theme.* [[https://protesilaos.com/modus-themes/][Source for the themes]]
-#+BEGIN_SRC emacs-lisp
-  ;; Light Theme
-  (use-package modus-operandi-theme)
-  (use-package modus-vivendi-theme)
-
-  ;; Configuration for both themes
-  (defmacro modus-themes-format-sexp (sexp &rest objects)
-    `(eval (read (format ,(format "%S" sexp) ,@objects))))
-
-  (dolist (theme '("operandi" "vivendi"))
-    (modus-themes-format-sexp
-     (defun modus-%1$s-theme-load ()
-       (setq modus-%1$s-theme-slanted-constructs t
-             modus-%1$s-theme-bold-constructs t
-             modus-%1$s-theme-no-link-underline nil
-             modus-%1$s-theme-faint-syntax t
-             modus-%1$s-theme-prompts 'intense
-             modus-%1$s-theme-completions 'moderate
-             modus-%1$s-theme-diffs 'fg-only
-             modus-%1$s-theme-org-blocks 'rainbow
-             modus-%1$s-theme-scale-headings t
-             modus-%1$s-theme-scale-1 1.1
-             modus-%1$s-theme-scale-2 1.15
-             modus-%1$s-theme-scale-3 1.21
-             modus-%1$s-theme-scale-4 1.27
-             modus-%1$s-theme-scale-5 1.33)
-       (load-theme 'modus-%1$s t))
-     theme))
-#+END_SRC
-
-*Allow switching between light and dark mode*
-#+begin_src emacs-lisp
-  (defun modus-themes-toggle ()
-    "Toggle between `modus-operandi' and `modus-vivendi' themes."
-    (interactive)
-    (if (eq (car custom-enabled-themes) 'modus-operandi)
-        (progn
-          (disable-theme 'modus-operandi)
-          (modus-vivendi-theme-load))
-      (disable-theme 'modus-vivendi)
-      (modus-operandi-theme-load)))
-#+end_src
-
-*Call the swich function once to load the light theme*
-#+begin_src emacs-lisp
-  (modus-themes-toggle)
-#+end_src
-
-*Use a nice looking modeline package*
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line)
-  (telephone-line-mode 1)
-#+END_SRC
-
-*Set up the default frame look*
-#+begin_src emacs-lisp
-  (setq default-frame-alist
-        (append (list '(width  . 90) '(height . 50)
-                      '(vertical-scroll-bars . nil)
-                      '(internal-border-width . 5))))
-#+end_src
-
 * Completion
 ** Ivy
 Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
+    :straight t
     :diminish
     :init
     (ivy-mode 1)
@@ -350,6 +369,7 @@ Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
 
   ;; ivy-rich makes Ivy look a little bit more like Helm.
   (use-package ivy-rich
+    :straight t
     :after counsel
     :custom
     (ivy-virtual-abbreviate 'full
@@ -358,18 +378,21 @@ Use Ivy to make minibuf promts better. Adds the ability to sort and filter.
     :init
     (ivy-rich-mode))
 
-  (use-package ivy-hydra)
+  (use-package ivy-hydra
+    :straight t)
 #+END_SRC
 
 ** Smex
 Sort commands by recency in ivy windows
 #+BEGIN_SRC emacs-lisp
-  (use-package smex)
+  (use-package smex
+    :straight t)
 #+END_SRC
 
 ** Counsel
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
+    :straight t
     :after ivy
     :init (counsel-mode 1)
     :bind (("C-c ;" . counsel-M-x)
@@ -385,6 +408,7 @@ Sort commands by recency in ivy windows
 ** Ido
 #+begin_src emacs-lisp
   (use-package ido
+    :straight t
     :config (ido-mode 1)
     :bind (("C-x f" . ido-find-file)))
 #+end_src
@@ -392,6 +416,7 @@ Sort commands by recency in ivy windows
 ** Autocompletion
 #+BEGIN_SRC emacs-lisp
   (use-package auto-complete
+    :straight t
     :config
     (ac-config-default))
 #+END_SRC
@@ -400,6 +425,7 @@ Sort commands by recency in ivy windows
 Magit is THE go to package for using git in emacs.
 #+BEGIN_SRC emacs-lisp
     (use-package magit
+      :straight t
       :bind (("C-c g" . magit-status))
       :diminish magit-auto-revert-mode
       :diminish auto-revert-mode
@@ -414,6 +440,7 @@ Magit is THE go to package for using git in emacs.
       (add-to-list 'magit-no-confirm 'stage-all-changes))
 
     (use-package libgit
+      :straight t
       :disabled
       :after magit)
 #+END_SRC
@@ -459,6 +486,7 @@ This is the main configuration for the infamous org-mode.
 The most important parts are configuring key bindings to quickly access the files we have defined above.
 #+BEGIN_SRC emacs-lisp
   (use-package org
+    :straight t
     ;; Always get this from the GNU archive.
     :bind (("C-c o c"  . org-capture)
            ("C-c o l"  . lux/open-link-dump)
@@ -554,6 +582,7 @@ Include images in org files as base64 directly into the HTML
 ** Org Mode Bling
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
+    :straight t
     :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
   (setq org-bullets-bullet-list '("◉" "○" "◆" "✿" "✚" "▶"))
 
@@ -640,6 +669,7 @@ Here we define templates we want to use to quickly capture stuff and automatical
 Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs
+    :straight t
     :defer t
     :init
     (with-eval-after-load 'winum
@@ -661,39 +691,18 @@ Treemacs makes navigating folders and files much easier. This is the default con
     :after treemacs magit
     :ensure t)
 #+END_SRC
-
-* Elfeed
-[[https://github.com/skeeto/elfeed][Elfeed]] is an RSS reader for emacs.
-#+BEGIN_SRC emacs-lisp
-  (use-package elfeed
-    :bind ("C-x w" . 'elfeed)
-    :config
-    (add-hook 'elfeed-show-mode-hook #'lux/focus-mode))
-#+END_SRC
-** Hooks
-elfeed can be extended with various hooks for ease of used
-*** Auto tag youtube feeds
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'elfeed-new-entry-hook
-            (elfeed-make-tagger :feed-url "youtube\\.com"
-                                :add '(video youtube)))
-#+END_SRC
-*** Do not spam unread tag
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'elfeed-new-entry-hook
-            (elfeed-make-tagger :before "2 weeks ago"
-                                :remove 'unread))
-#+END_SRC
 * Misc Packages
 ** All The Icons
 We want to have some nice looking icons
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons)
+  (use-package all-the-icons
+    :straight t)
 #+END_SRC
 ** Recentf
 Show recent files in the buffer selection
 #+BEGIN_SRC emacs-lisp
   (use-package recentf
+    :straight t
     :init (recentf-mode t)
     :config
     (add-to-list 'recentf-exclude "\\.emacs.d")
@@ -703,11 +712,13 @@ Show recent files in the buffer selection
 We want to have some nicely colored delimiters when reading and writing lisp code
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
+    :straight t
     :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
 ** Markdown Mode
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
+    :straight t
     :mode ("\\.md$" . gfm-mode)
     :config
     (when (executable-find "pandoc")
@@ -717,6 +728,7 @@ We want to have some nicely colored delimiters when reading and writing lisp cod
 Quick bind to ~C-c u~ to duplicate the current line
 #+BEGIN_SRC emacs-lisp
   (use-package duplicate-thing
+    :straight t
     :bind (("C-c u" . duplicate-thing)))
 #+END_SRC
 ** ACE Window
@@ -724,6 +736,7 @@ Small package to quickly switch tiled windows.
 Use ~M-o~ to quickly switch.
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
+    :straight t
     :bind (("M-o" . 'ace-window))
     :config
     (custom-set-faces
@@ -735,19 +748,8 @@ Use ~M-o~ to quickly switch.
 ** htmlize
 HTML Exporter for org-mode
 #+BEGIN_SRC emacs-lisp
-     (use-package htmlize)
-#+END_SRC
-
-** Olivetti
-A simple Emacs minor mode for a nice writing environment.
-[[https://github.com/rnkn/olivetti][Gihub Link]]
-#+BEGIN_SRC emacs-lisp
-  (use-package olivetti
-    :diminish
-    :config
-    (setq olivetti-minimum-body-width 72)
-    (setq olivetti-body-width 0.65)
-    (setq olivetti-recall-visual-line-mode-entry-state t))
+     (use-package htmlize
+       :straight t)
 #+END_SRC
 
 ** Ag
@@ -756,7 +758,8 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 [[https://agel.readthedocs.io/en/latest/index.html][Documentation]]
 
 #+BEGIN_SRC emacs-lisp
-(use-package ag)
+(use-package ag
+    :straight t)
 #+END_SRC
 
 ** Yasnippet
@@ -764,6 +767,7 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 
 #+begin_src emacs-lisp
   (use-package yasnippet
+    :straight t
     :config
     (progn
       (setq yas-snippet-dirs '("~/.emacs.d/snippets"))

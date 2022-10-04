@@ -24,7 +24,12 @@ Packages provided by =straight.el= https://github.com/radian-software/straight.e
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
+
   (package-initialize)
+
+  (straight-use-package 'bind-key)
 #+end_src
 
 * Theming
@@ -185,15 +190,15 @@ Emacs sure loves to clutter directories with backup files.
 
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
-  (bind-key "C-x k"      'kill-buffer-with-prejudice)
-  (bind-key "C-x C-k"    'kill-buffer-and-window)
-  (bind-key "M-p"        'switch-to-previous-buffer)
-  (bind-key "M-i"        'delete-indentation)
-  (bind-key "C-+"        'text-scale-increase)
-  (bind-key "C--"        'text-scale-decrease)
-  ;; buffer-list is not a good default
-  (bind-key "C-x C-b"    'ibuffer)
-  (bind-key "C-c n"      'display-line-numbers-mode)
+    (bind-key "C-x k"      'kill-buffer-with-prejudice)
+    (bind-key "C-x C-k"    'kill-buffer-and-window)
+    (bind-key "M-p"        'switch-to-previous-buffer)
+    (bind-key "M-i"        'delete-indentation)
+    (bind-key "C-+"        'text-scale-increase)
+    (bind-key "C--"        'text-scale-decrease)
+    ;; buffer-list is not a good default
+    (bind-key "C-x C-b"    'ibuffer)
+    (bind-key "C-c n"      'display-line-numbers-mode)
 #+END_SRC
 
 Unbind useless keys.
@@ -688,8 +693,7 @@ Treemacs makes navigating folders and files much easier. This is the default con
           ("M-9"     . treemacs-select-window)))
 
   (use-package treemacs-magit
-    :after treemacs magit
-    :ensure t)
+    :after treemacs magit)
 #+END_SRC
 * Misc Packages
 ** All The Icons

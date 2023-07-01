@@ -6,7 +6,6 @@ Points of intrest:
 - Personal information (name, email) are stored in a separate ~personal.el~ file.
 - Machine specific settings are stored in a separate ~custom.el~ file.
 - Both files are loaded automatically.
-- When Exporting HTML from ~org-mode~ the style from the ~org-theme.css~ file is inlined automatically.
 
 * Set Up use-package
 Packages provided by =straight.el= https://github.com/radian-software/straight.el
@@ -114,7 +113,7 @@ Configure all nano modules
 *Set up the default frame look*
 #+begin_src emacs-lisp
   (setq default-frame-alist
-        (append (list '(width  . 90) '(height . 50)
+        (append (list '(width  . 90) '(height . 60)
                       '(vertical-scroll-bars . nil)
                       '(internal-border-width . 5))))
 #+end_src
@@ -124,7 +123,7 @@ Configure all nano modules
 Remove all those UI elements. They do not look good and waste space.
 #+BEGIN_SRC emacs-lisp
   (tool-bar-mode -1)
-  (menu-bar-mode t)
+  (menu-bar-mode -1)
   (scroll-bar-mode -1)
   (tooltip-mode -1)
   (fringe-mode -1)
@@ -150,7 +149,7 @@ Emacs sure loves to clutter directories with backup files.
 
   ;; No more startup messages and screens
   (setq inhibit-startup-screen t)
-  (setq initial-scratch-message nil)
+  (setq initial-buffer-choice  nil)
   (defun display-startup-echo-area-message ()
     (message "Welcome Back!"))
 
@@ -201,7 +200,7 @@ Emacs sure loves to clutter directories with backup files.
   ;; buffer-list is not a good default
   (bind-key "C-x C-b"    'ibuffer)
   (bind-key "C-c n"      'display-line-numbers-mode)
-  (global-set-key [f12] 'lux/indent-buffer)
+  (global-set-key (kbd "<f12>") 'menu-bar-mode)
 #+END_SRC
 
 Unbind useless keys.
@@ -408,23 +407,23 @@ Don't prompt to save unmodified buffers on exit.
 This is the main configuration for the infamous org-mode.
 The most important parts are configuring key bindings to quickly access the files we have defined above.
 #+BEGIN_SRC emacs-lisp
-  (use-package org
-    :straight t
-    ;; Always get this from the GNU archive.
-    :bind (:map org-mode-map
-           ("M-s-<return>" . org-insert-todo-heading)
-           ("M-<return>" . org-insert-heading-respect-content)
-           ("C-c a s"  . org-emphasize)
-           ("C-c -"    . org-edit-special))
-    :hook ((org-mode . visual-line-mode)
-           (org-mode . org-indent-mode))
-    :config
-    (setq org-pretty-entities t
-          org-indent-mode t
-          org-hide-leading-stars nil
-          org-link-file-path-type 'relative
-          org-hide-emphasis-markers t
-          )
+  ;; (use-package org
+  ;;   :straight t
+  ;;   ;; Always get this from the GNU archive.
+  ;;   :bind (:map org-mode-map
+  ;;          ("M-s-<return>" . org-insert-todo-heading)
+  ;;          ("M-<return>" . org-insert-heading-respect-content)
+  ;;          ("C-c a s"  . org-emphasize)
+  ;;          ("C-c -"    . org-edit-special))
+  ;;   :hook ((org-mode . visual-line-mode)
+  ;;          (org-mode . org-indent-mode))
+  ;;   :config
+  ;;   (setq org-pretty-entities t
+  ;;         org-indent-mode t
+  ;;         org-hide-leading-stars nil
+  ;;         org-link-file-path-type 'relative
+  ;;         org-hide-emphasis-markers t
+  ;;         )
 #+END_SRC
 
 ** Archive Location

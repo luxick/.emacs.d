@@ -36,79 +36,79 @@ Packages provided by =straight.el= https://github.com/radian-software/straight.e
 Add the nano package from Github
 #+begin_src emacs-lisp
   (straight-use-package
-    '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+   '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
 
   (setq nano-font-size 12)
 #+end_src
 
 Configure all nano modules 
 #+begin_src emacs-lisp
-;; Default layout (optional)
-(require 'nano-layout)
+  ;; Default layout (optional)
+  (require 'nano-layout)
 
-;; Theming Command line options (this will cancel warning messages)
-(add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
-(add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
-(add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
-(add-to-list 'command-switch-alist '("-no-splash" . (lambda (args))))
-(add-to-list 'command-switch-alist '("-no-help" . (lambda (args))))
-(add-to-list 'command-switch-alist '("-compact" . (lambda (args))))
+  ;; Theming Command line options (this will cancel warning messages)
+  (add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
+  (add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
+  (add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
+  (add-to-list 'command-switch-alist '("-no-splash" . (lambda (args))))
+  (add-to-list 'command-switch-alist '("-no-help" . (lambda (args))))
+  (add-to-list 'command-switch-alist '("-compact" . (lambda (args))))
 
 
-(cond
- ((member "-default" command-line-args) t)
- ((member "-dark" command-line-args) (require 'nano-theme-dark))
- (t (require 'nano-theme-light)))
+  (cond
+   ((member "-default" command-line-args) t)
+   ((member "-dark" command-line-args) (require 'nano-theme-dark))
+   (t (require 'nano-theme-light)))
 
-;; Customize support for 'emacs -q' (Optional)
-;; You can enable customizations by creating the nano-custom.el file
-;; with e.g. `touch nano-custom.el` in the folder containing this file.
-(let* ((this-file  (or load-file-name (buffer-file-name)))
-       (this-dir  (file-name-directory this-file))
-       (custom-path  (concat this-dir "nano-custom.el")))
-  (when (and (eq nil user-init-file)
-             (eq nil custom-file)
-             (file-exists-p custom-path))
-    (setq user-init-file this-file)
-    (setq custom-file custom-path)
-    (load custom-file)))
+  ;; Customize support for 'emacs -q' (Optional)
+  ;; You can enable customizations by creating the nano-custom.el file
+  ;; with e.g. `touch nano-custom.el` in the folder containing this file.
+  (let* ((this-file  (or load-file-name (buffer-file-name)))
+         (this-dir  (file-name-directory this-file))
+         (custom-path  (concat this-dir "nano-custom.el")))
+    (when (and (eq nil user-init-file)
+               (eq nil custom-file)
+               (file-exists-p custom-path))
+      (setq user-init-file this-file)
+      (setq custom-file custom-path)
+      (load custom-file)))
 
-;; Theme
-(require 'nano-faces)
-(nano-faces)
+  ;; Theme
+  (require 'nano-faces)
+  (nano-faces)
 
-(require 'nano-theme)
-(nano-theme)
+  (require 'nano-theme)
+  (nano-theme)
 
-;; Nano session saving (optional)
-(require 'nano-session)
+  ;; Nano session saving (optional)
+  (require 'nano-session)
 
-;; Nano header & mode lines (optional)
-(require 'nano-modeline)
+  ;; Nano header & mode lines (optional)
+  (require 'nano-modeline)
 
-;; Nano key bindings modification (optional)
-(require 'nano-bindings)
+  ;; Nano key bindings modification (optional)
+  (require 'nano-bindings)
 
-;; Compact layout (need to be loaded after nano-modeline)
-(when (member "-compact" command-line-args)
-  (require 'nano-compact))
-  
-;; Nano counsel configuration (optional)
-;; Needs "counsel" package to be installed (M-x: package-install)
-;; (require 'nano-counsel)
+  ;; Compact layout (need to be loaded after nano-modeline)
+  (when (member "-compact" command-line-args)
+    (require 'nano-compact))
 
-;; Welcome message (optional)
-(let ((inhibit-message t))
-  (message "Welcome to GNU Emacs / N Λ N O edition")
-  (message (format "Initialization time: %s" (emacs-init-time))))
+  ;; Nano counsel configuration (optional)
+  ;; Needs "counsel" package to be installed (M-x: package-install)
+  ;; (require 'nano-counsel)
 
-;; Splash (optional)
-(unless (member "-no-splash" command-line-args)
-  (require 'nano-splash))
+  ;; Welcome message (optional)
+  (let ((inhibit-message t))
+    (message "Welcome to GNU Emacs / N Λ N O edition")
+    (message (format "Initialization time: %s" (emacs-init-time))))
 
-;; Help (optional)
-(unless (member "-no-help" command-line-args)
-  (require 'nano-help))
+  ;; Splash (optional)
+  (unless (member "-no-splash" command-line-args)
+    (require 'nano-splash))
+
+  ;; Help (optional)
+  (unless (member "-no-help" command-line-args)
+    (require 'nano-help))
 #+end_src
 
 *Set up the default frame look*
@@ -124,10 +124,12 @@ Configure all nano modules
 Remove all those UI elements. They do not look good and waste space.
 #+BEGIN_SRC emacs-lisp
   (tool-bar-mode -1)
-  (menu-bar-mode -1)
+  (menu-bar-mode t)
   (scroll-bar-mode -1)
   (tooltip-mode -1)
   (fringe-mode -1)
+
+
 #+END_SRC
 
 ** Disable file backups
@@ -190,62 +192,63 @@ Emacs sure loves to clutter directories with backup files.
 
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
-    (bind-key "C-x k"      'kill-buffer-with-prejudice)
-    (bind-key "C-x C-k"    'kill-buffer-and-window)
-    (bind-key "M-p"        'switch-to-previous-buffer)
-    (bind-key "M-i"        'delete-indentation)
-    (bind-key "C-+"        'text-scale-increase)
-    (bind-key "C--"        'text-scale-decrease)
-    ;; buffer-list is not a good default
-    (bind-key "C-x C-b"    'ibuffer)
-    (bind-key "C-c n"      'display-line-numbers-mode)
+  (bind-key "C-x k"      'kill-buffer-with-prejudice)
+  (bind-key "C-x C-k"    'kill-buffer-and-window)
+  (bind-key "M-p"        'switch-to-previous-buffer)
+  (bind-key "M-i"        'delete-indentation)
+  (bind-key "C-+"        'text-scale-increase)
+  (bind-key "C--"        'text-scale-decrease)
+  ;; buffer-list is not a good default
+  (bind-key "C-x C-b"    'ibuffer)
+  (bind-key "C-c n"      'display-line-numbers-mode)
+  (global-set-key [f12] 'lux/indent-buffer)
 #+END_SRC
 
 Unbind useless keys.
 #+BEGIN_SRC emacs-lisp
-     (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
-     (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
-     (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
-     (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
-     (unbind-key "C-x C-r") ;; as is find-file-read-only
+  (unbind-key "C-<tab>") ;; prevent switching to tab mode randomly
+  (unbind-key "C-h n")   ;; I have never wanted to see emacs news ever
+  (unbind-key "C-h C-n") ;; why on earth is it bound to two keybindings??
+  (unbind-key "C-x C-d") ;; list-directory is utterly useless given the existence of dired
+  (unbind-key "C-x C-r") ;; as is find-file-read-only
 #+END_SRC
 
 * Useful Functions
 ** Edit This File
 A simple funtion to open this file for quick editing.
 #+BEGIN_SRC emacs-lisp
-     (defun edit-config ()
-       (interactive)
-       (find-file "~/.emacs.d/README.org"))
+  (defun edit-config ()
+    (interactive)
+    (find-file "~/.emacs.d/README.org"))
 #+END_SRC
 
 ** Reformating
-Reindet the whole buffer with ~F12~
+Reindet the whole buffer with ~F1~
 #+BEGIN_SRC emacs-lisp
   (defun lux/indent-buffer ()
     "Reindents the whole buffer"
     (interactive)
     (save-excursion
       (indent-region (point-min) (point-max) nil)))
-  (global-set-key [f12] 'lux/indent-buffer)
+  (global-set-key [f1] 'lux/indent-buffer)
 #+END_SRC
 
 ** Window Splitting
 These are functions for splitting windows and move the cursor over immediately.
 #+BEGIN_SRC emacs-lisp
-     (defun lux/split-right-and-enter ()
-       "Split the window to the right and enter it."
-       (interactive)
-       (split-window-right)
-       (other-window 1))
-    (bind-key "M-3" 'lux/split-right-and-enter)
+  (defun lux/split-right-and-enter ()
+    "Split the window to the right and enter it."
+    (interactive)
+    (split-window-right)
+    (other-window 1))
+  (bind-key "M-3" 'lux/split-right-and-enter)
 
-     (defun lux/split-below-and-enter ()
-       "Split the window down and enter it."
-       (interactive)
-       (split-window-below)
-       (other-window 1))
-    (bind-key "M-2" 'lux/split-below-and-enter)
+  (defun lux/split-below-and-enter ()
+    "Split the window down and enter it."
+    (interactive)
+    (split-window-below)
+    (other-window 1))
+  (bind-key "M-2" 'lux/split-below-and-enter)
 #+END_SRC
 
 Rebind the default window controls to use "M-*" keys for ease-of-use
@@ -262,97 +265,12 @@ Rebind the default window controls to use "M-*" keys for ease-of-use
     (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
 
-** The Links File
-The link dump is the file to throw all links for later reading in.Where the file is located should be set in either =personal.el= or =custom.el=.
-#+BEGIN_SRC emacs-lisp
-  (defvar lux/link-dump "")
-  (defun lux/open-link-dump ()
-    "Open the file with the links"
-    (interactive)
-    (find-file lux/link-dump))
-#+END_SRC
-
-** Variable Pitch Mode
-This custom version of =variable-pitch-mode= allows to mix variable and fixed fonts in the same buffer. This is very useful for org buffers with code blocks in them. This is a slight variation of [[https://protesilaos.com/dotemacs/][Protesilaos Stavrous]] version.
-
-#+begin_src emacs-lisp
-  (use-package face-remap
-    :diminish buffer-face-mode            ; the actual mode
-    :commands lux/variable-pitch-mode
-    :hook (text-mode . lux/variable-pitch-mode)
-    :config
-    (define-minor-mode lux/variable-pitch-mode
-      "Toggle `variable-pitch-mode', except for `prog-mode'."
-      :init-value nil
-      :global nil
-      (if lux/variable-pitch-mode
-          (unless (derived-mode-p 'prog-mode)
-            (variable-pitch-mode 1))
-        (variable-pitch-mode -1))))
-#+end_src
-
-** Focused Mode
-This is a special minor mode that allows focus reading of longer texts. It is a combination of other useful modes to create a distraction free reading environment.
-
-This is a minor mode for keeping the cursor at the center of the screen while scrolling
-#+begin_src emacs-lisp
-  (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1)
-  (setq-default scroll-margin 0)
-
-  (define-minor-mode lux/center-scroll-mode
-    "Toggle centred cursor scrolling behaviour."
-    :init-value nil
-    :lighter " S="
-    :global nil
-    (if lux/center-scroll-mode
-        (setq-local scroll-margin (* (frame-height) 2)
-                    scroll-conservatively 0
-                    maximum-scroll-margin 0.5)
-      (dolist (local '(scroll-preserve-screen-position
-                       scroll-conservatively
-                       maximum-scroll-margin
-                       scroll-margin))
-        (kill-local-variable `,local))))
-
-  (bind-key "C-c l" 'lux/center-scroll-mode)
-#+end_src
-
-#+begin_src emacs-lisp
-  (define-minor-mode lux/focus-mode
-    "Creates a distraction free reading environment in the current buffer"
-    :init-value nil
-    :global nil
-    (if lux/focus-mode
-        (progn
-          (olivetti-mode 1)
-          (lux/center-scroll-mode 1))
-      (progn 
-        (olivetti-mode -1)
-        (lux/center-scroll-mode -1))))
-
-  (bind-key "C-c f" 'lux/focus-mode)
-#+end_src
-
-** Org show only current subtree
-
-Fold all other subtrees in an org file and show just the current one
-#+begin_src emacs-lisp
-  (defun lux/org-show-just-me (&rest _)
-    "Fold all other trees, then show entire current subtree."
-    (interactive)
-    (org-overview)
-    (org-reveal)
-    (org-show-subtree))
-  (bind-key "C-c m" 'lux/org-show-just-me)
-#+end_src
-
 * Fonts
 Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] font family.
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Iosevka Light-12")
-  (set-face-attribute 'fixed-pitch nil :font "Iosevka Light-12")
-  (set-face-attribute 'variable-pitch nil :font "Iosevka Aile Light-12")
+  (set-face-attribute 'default nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'fixed-pitch nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'variable-pitch nil :font "Fantasque Sans Mono-12")
 #+end_src
 
 * Completion
@@ -429,61 +347,61 @@ Sort commands by recency in ivy windows
 * Magit
 Magit is THE go to package for using git in emacs.
 #+BEGIN_SRC emacs-lisp
-    (use-package magit
-      :straight t
-      :bind (("C-c g" . magit-status))
-      :diminish magit-auto-revert-mode
-      :diminish auto-revert-mode
-      :custom
-      (magit-remote-set-if-missing t)
-      (magit-diff-refine-hunk t)
-      :config
-      (magit-auto-revert-mode t)
-      (advice-add 'magit-refresh :before #'maybe-unset-buffer-modified)
-      (advice-add 'magit-commit  :before #'maybe-unset-buffer-modified)
-      (setq magit-completing-read-function 'ivy-completing-read)
-      (add-to-list 'magit-no-confirm 'stage-all-changes))
+  (use-package magit
+    :straight t
+    :bind (("C-c g" . magit-status))
+    :diminish magit-auto-revert-mode
+    :diminish auto-revert-mode
+    :custom
+    (magit-remote-set-if-missing t)
+    (magit-diff-refine-hunk t)
+    :config
+    (magit-auto-revert-mode t)
+    (advice-add 'magit-refresh :before #'maybe-unset-buffer-modified)
+    (advice-add 'magit-commit  :before #'maybe-unset-buffer-modified)
+    (setq magit-completing-read-function 'ivy-completing-read)
+    (add-to-list 'magit-no-confirm 'stage-all-changes))
 
-    (use-package libgit
-      :straight t
-      :disabled
-      :after magit)
+  (use-package libgit
+    :straight t
+    :disabled
+    :after magit)
 #+END_SRC
 The ~advice-add~ entries are thereto stop magit from bugging us to save buffers when commiting and refreshing.
 
 ** Helper Functions
 #+BEGIN_SRC emacs-lisp
-     (autoload 'diff-no-select "diff")
-     (defun current-buffer-matches-file-p ()
-       "Return t if the current buffer is identical to its associated file."
-       (when (and buffer-file-name (buffer-modified-p))
-         (diff-no-select buffer-file-name (current-buffer) nil 'noasync)
-         (with-current-buffer "*Diff*"
-           (and (search-forward-regexp "^Diff finished \(no differences\)\." (point-max) 'noerror) t))))
+  (autoload 'diff-no-select "diff")
+  (defun current-buffer-matches-file-p ()
+    "Return t if the current buffer is identical to its associated file."
+    (when (and buffer-file-name (buffer-modified-p))
+      (diff-no-select buffer-file-name (current-buffer) nil 'noasync)
+      (with-current-buffer "*Diff*"
+        (and (search-forward-regexp "^Diff finished \(no differences\)\." (point-max) 'noerror) t))))
 #+END_SRC
 
 Clear modified bit on all unmodified buffers
 #+BEGIN_SRC emacs-lisp
-     (defun maybe-unset-buffer-modified (&optional _)
-       (interactive)
-       (dolist (buf (buffer-list))
-         (with-current-buffer buf
-           (when (and buffer-file-name (buffer-modified-p) (current-buffer-matches-file-p))
-             (set-buffer-modified-p nil)))))
+  (defun maybe-unset-buffer-modified (&optional _)
+    (interactive)
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (when (and buffer-file-name (buffer-modified-p) (current-buffer-matches-file-p))
+          (set-buffer-modified-p nil)))))
 
 #+END_SRC
 
 Don't prompt to save unmodified buffers on exit.
 #+BEGIN_SRC emacs-lisp
-     (advice-add 'save-buffers-kill-emacs :before #'maybe-unset-buffer-modified)
+  (advice-add 'save-buffers-kill-emacs :before #'maybe-unset-buffer-modified)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-     (defun kill-buffer-with-prejudice (&optional _)
-       "Kill a buffer, eliding the save dialogue if there are no diffs."
-       (interactive)
-       (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
-       (kill-buffer))
+  (defun kill-buffer-with-prejudice (&optional _)
+    "Kill a buffer, eliding the save dialogue if there are no diffs."
+    (interactive)
+    (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
+    (kill-buffer))
 #+END_SRC
 
 * Org Mode
@@ -493,11 +411,7 @@ The most important parts are configuring key bindings to quickly access the file
   (use-package org
     :straight t
     ;; Always get this from the GNU archive.
-    :bind (("C-c o c"  . org-capture)
-           ("C-c o l"  . lux/open-link-dump)
-           ("C-c o s"  . org-store-link)
-           ("C-c o a"  . org-agenda)
-           :map org-mode-map
+    :bind (:map org-mode-map
            ("M-s-<return>" . org-insert-todo-heading)
            ("M-<return>" . org-insert-heading-respect-content)
            ("C-c a s"  . org-emphasize)
@@ -505,18 +419,12 @@ The most important parts are configuring key bindings to quickly access the file
     :hook ((org-mode . visual-line-mode)
            (org-mode . org-indent-mode))
     :config
-    (setq org-footnote-section ""
-          org-startup-with-inline-images t
-          org-pretty-entities t
+    (setq org-pretty-entities t
           org-indent-mode t
-          org-footnote-section nil
           org-hide-leading-stars nil
           org-link-file-path-type 'relative
-          org-image-actual-width nil           ; with this image sizes can be set per image, with an attribute
-          org-display-inline-images t
           org-hide-emphasis-markers t
           )
-    (setcar (nthcdr 4 org-emphasis-regexp-components) 4))
 #+END_SRC
 
 ** Archive Location
@@ -526,107 +434,6 @@ All archives should be stored in a single  ~.archive~ file per directory.
 #+BEGIN_SRC emacs-lisp
   (setq org-archive-location "./.archive::* From %s")
 #+END_SRC
-
-** Export Location
-This snippet will create a sub dir for exports from org-mode.
-[[https://stackoverflow.com/questions/9559753/emacs-org-mode-export-to-another-directory][See the Stackoverflow question]]
-
-#+BEGIN_SRC emacs-lisp
-  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
-    (unless pub-dir
-      (setq pub-dir "Exports")
-      (unless (file-directory-p pub-dir)
-        (make-directory pub-dir)))
-    (apply orig-fun extension subtreep pub-dir nil))
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
-#+END_SRC
-
-** Export HTML
-Auto inline a CSS theme for org HTML exports.
-This will make sure a self contained single HTML file is created.
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-org-inline-css-hook (exporter)
-    "Insert custom inline css"
-    (when (eq exporter 'html)
-      (let* ((dir (ignore-errors (file-name-directory (buffer-file-name))))
-             (path (concat dir "style.css"))
-             (homestyle (or (null dir) (null (file-exists-p path))))
-             (final (if homestyle "~/.emacs.d/org-theme.css" path))) ;; <- set your own style file path
-        (setq org-html-head-include-default-style nil)
-        (setq org-html-head (concat
-                             "<style type=\"text/css\">\n"
-                             "<!--/*--><![CDATA[/*><!--*/\n"
-                             (with-temp-buffer
-                               (insert-file-contents final)
-                               (buffer-string))
-                             "/*]]>*/-->\n"
-                             "</style>\n")))))
-
-  (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)
-#+END_SRC
-
-Include images in org files as base64 directly into the HTML
-#+begin_src emacs-lisp
-  (defun replace-in-string (what with in)
-    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
-
-  (defun org-html--format-image (source attributes info)
-    (progn
-      (setq source (replace-in-string "%20" " " source))
-      (format "<img src=\"data:image/%s;base64,%s\"%s />"
-              (or (file-name-extension source) "")
-              (base64-encode-string
-               (with-temp-buffer
-                 (insert-file-contents-literally source)
-                 (buffer-string)))
-              (file-name-nondirectory source))
-      ))
-#+end_src
-
-** Org Mode Bling
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :straight t
-    :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-  (setq org-bullets-bullet-list '("◉" "○" "◆" "✿" "✚" "▶"))
-
-  ;; Ellipsis icon
-  (setq org-ellipsis "▾")
-
-  ;; Nice Icons for lists
-  (add-hook 'org-mode-hook
-            (lambda ()
-              "Beautify Org Checkbox Symbol"
-              (push '("[ ]" . "☐") prettify-symbols-alist)
-              (push '("[X]" . "☑" ) prettify-symbols-alist)
-              (push '("[-]" . "❍" ) prettify-symbols-alist)
-              (prettify-symbols-mode)))
-  ;; We also want them in exported HTML files
-  (setq org-html-checkbox-type 'html)
-
-  ;; Replace dash in bullet lists with unicode symbol
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Strike out done ckeckbox items
-  (defface org-checkbox-done-text
-    '((t (:foreground "#71696A" :strike-through t)))
-    "Face for the text part of a checked org-mode checkbox.")
-
-  (font-lock-add-keywords
-   'org-mode
-   `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
-      1 'org-checkbox-done-text prepend))
-   'append)
-
-  ;; Prettier Timestamps in Exports
-  (setq-default org-display-custom-times t)
-  (setq org-time-stamp-custom-formats
-        '("<%a %d.%m.%Y>" . "<%d.%m.%y %H:%M>"))
-#+END_SRC
-
 ** Templates
 *** Babel
 Here we set custom templates to be used for structure expansion.
@@ -643,58 +450,6 @@ Shortcut for creating ~emacs-lisp~ code blocks. This is used extensively in this
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 #+END_SRC
 
-*** Capture
-First we define a function to look the subheading under which we want to file captures:
-#+BEGIN_SRC emacs-lisp
-  (defun org-get-target-headline (&optional targets prompt)
-    "Prompt for a location in an org file and jump to it.
-
-  This is for promping for refile targets when doing captures.
-  Targets are selected from `org-refile-targets'. If TARGETS is
-  given it temporarily overrides `org-refile-targets'. PROMPT will
-  replace the default prompt message.
-
-  If CAPTURE-LOC is is given, capture to that location instead of
-  prompting."
-    (let ((org-refile-targets (or targets org-refile-targets))
-          (prompt (or prompt "Capture Location")))
-      (org-refile t nil nil prompt))
-    )
-#+END_SRC
-
-Here we define templates we want to use to quickly capture stuff and automatically file them away.
-#+BEGIN_SRC emacs-lisp
-  (setq org-capture-templates
-        '(("l" "Link" entry (file lux/link-dump)
-           "* NEW %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n")
-          ))
-#+END_SRC
-
-* Treemacs
-Treemacs makes navigating folders and files much easier. This is the default config from [[https://github.com/Alexander-Miller/treemacs][the offical repository]] as a base, with slight modifications to suite my config.
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :straight t
-    :defer t
-    :init
-    (with-eval-after-load 'winum
-      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-    :config
-    (progn
-      (setq treemacs-show-hidden-files t
-            treemacs-sorting 'alphabetic-asc
-            treemacs-width 35)
-
-      (treemacs-filewatch-mode t)
-      (treemacs-toggle-show-dotfiles))
-    :bind
-    (:map global-map
-          ("C-x t t" . treemacs)
-          ("M-9"     . treemacs-select-window)))
-
-  (use-package treemacs-magit
-    :after treemacs magit)
-#+END_SRC
 * Misc Packages
 ** All The Icons
 We want to have some nice looking icons
@@ -702,6 +457,7 @@ We want to have some nice looking icons
   (use-package all-the-icons
     :straight t)
 #+END_SRC
+
 ** Recentf
 Show recent files in the buffer selection
 #+BEGIN_SRC emacs-lisp
@@ -712,6 +468,7 @@ Show recent files in the buffer selection
     (add-to-list 'recentf-exclude "\\.emacs.d")
     (add-to-list 'recentf-exclude ".+tmp......\\.org"))
 #+END_SRC
+
 ** Rainbow Delimiters
 We want to have some nicely colored delimiters when reading and writing lisp code
 #+BEGIN_SRC emacs-lisp
@@ -719,6 +476,7 @@ We want to have some nicely colored delimiters when reading and writing lisp cod
     :straight t
     :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
+
 ** Markdown Mode
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
@@ -728,6 +486,7 @@ We want to have some nicely colored delimiters when reading and writing lisp cod
     (when (executable-find "pandoc")
       (setq markdown-command "pandoc -f markdown -t html")))
 #+END_SRC
+
 ** Duplicate Thing
 Quick bind to ~C-c u~ to duplicate the current line
 #+BEGIN_SRC emacs-lisp
@@ -735,6 +494,7 @@ Quick bind to ~C-c u~ to duplicate the current line
     :straight t
     :bind (("C-c u" . duplicate-thing)))
 #+END_SRC
+
 ** ACE Window
 Small package to quickly switch tiled windows.
 Use ~M-o~ to quickly switch.
@@ -749,34 +509,15 @@ Use ~M-o~ to quickly switch.
      ))
 #+END_SRC
 
-** htmlize
-HTML Exporter for org-mode
-#+BEGIN_SRC emacs-lisp
-     (use-package htmlize
-       :straight t)
-#+END_SRC
-
 ** Ag
 Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file type, edit results inline, or find files.
 
 [[https://agel.readthedocs.io/en/latest/index.html][Documentation]]
 
 #+BEGIN_SRC emacs-lisp
-(use-package ag
+  (use-package ag
     :straight t)
 #+END_SRC
-
-** Yasnippet
-[[https://github.com/joaotavora/yasnippet][Github]]
-
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :straight t
-    :config
-    (progn
-      (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-      (yas-global-mode 1)))
-#+end_src
 
 * Programming
 ** Elisp
@@ -807,4 +548,5 @@ It conatins customizations and file locations that are machine dependend.
   (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file 'noerror)
 #+END_SRC
+
 

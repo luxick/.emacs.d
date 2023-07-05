@@ -32,82 +32,22 @@ Packages provided by =straight.el= https://github.com/radian-software/straight.e
 #+end_src
 
 * Theming
-Add the nano package from Github
 #+begin_src emacs-lisp
-  (straight-use-package
-   '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+  (use-package modus-themes
+    :straight t
+    :config
+    ;; Add all your customizations prior to loading the themes
+    (setq modus-themes-italic-constructs t
+          modus-themes-bold-constructs nil)
 
-  (setq nano-font-size 12)
-#+end_src
+    ;; Maybe define some palette overrides, such as by using our presets
+    (setq modus-themes-common-palette-overrides
+          modus-themes-preset-overrides-intense)
 
-Configure all nano modules 
-#+begin_src emacs-lisp
-  ;; Default layout (optional)
-  (require 'nano-layout)
+    ;; Load the theme of your choice.
+    (load-theme 'modus-operandi)
 
-  ;; Theming Command line options (this will cancel warning messages)
-  (add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
-  (add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
-  (add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
-  (add-to-list 'command-switch-alist '("-no-splash" . (lambda (args))))
-  (add-to-list 'command-switch-alist '("-no-help" . (lambda (args))))
-  (add-to-list 'command-switch-alist '("-compact" . (lambda (args))))
-
-
-  (cond
-   ((member "-default" command-line-args) t)
-   ((member "-dark" command-line-args) (require 'nano-theme-dark))
-   (t (require 'nano-theme-light)))
-
-  ;; Customize support for 'emacs -q' (Optional)
-  ;; You can enable customizations by creating the nano-custom.el file
-  ;; with e.g. `touch nano-custom.el` in the folder containing this file.
-  (let* ((this-file  (or load-file-name (buffer-file-name)))
-         (this-dir  (file-name-directory this-file))
-         (custom-path  (concat this-dir "nano-custom.el")))
-    (when (and (eq nil user-init-file)
-               (eq nil custom-file)
-               (file-exists-p custom-path))
-      (setq user-init-file this-file)
-      (setq custom-file custom-path)
-      (load custom-file)))
-
-  ;; Theme
-  (require 'nano-faces)
-  (nano-faces)
-
-  (require 'nano-theme)
-  (nano-theme)
-
-  ;; Nano session saving (optional)
-  (require 'nano-session)
-
-  ;; Nano header & mode lines (optional)
-  (require 'nano-modeline)
-
-  ;; Nano key bindings modification (optional)
-  (require 'nano-bindings)
-
-  ;; Compact layout (need to be loaded after nano-modeline)
-  (when (member "-compact" command-line-args)
-    (require 'nano-compact))
-
-  ;; Nano counsel configuration (optional)
-  ;; Needs "counsel" package to be installed (M-x: package-install)
-  ;; (require 'nano-counsel)
-
-  ;; Welcome message (optional)
-  (let ((inhibit-message t))
-    (message "Welcome to GNU Emacs / N Λ N O edition")
-    (message (format "Initialization time: %s" (emacs-init-time))))
-
-  ;; Splash (optional)
-  (unless (member "-no-splash" command-line-args)
-    (require 'nano-splash))
-
-  ;; Help (optional)
-  (unless (member "-no-help" command-line-args)
-    (require 'nano-help))
+    (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 #+end_src
 
 *Set up the default frame look*
@@ -127,8 +67,6 @@ Remove all those UI elements. They do not look good and waste space.
   (scroll-bar-mode -1)
   (tooltip-mode -1)
   (fringe-mode -1)
-
-
 #+END_SRC
 
 ** Disable file backups
@@ -553,6 +491,21 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
 #+END_SRC
 
 * Programming
+** General
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :straight t)
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+END_SRC
+
 ** Elisp
 Some customization for writing elisp
 #+BEGIN_SRC emacs-lisp
@@ -565,6 +518,14 @@ Some customization for writing elisp
   (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 #+END_SRC
 
+** Common Lisp
+#+BEGIN_SRC emacs-lisp
+  (setq inferior-lisp-program "sbcl")
+  (use-package slime
+    :straight t)
+  (slime-setup '(slime-fancy slime-quicklisp slime-asdf))
+  (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
+#+END_SRC
 * Load additional files
 All information about the current user should reside in the ~personal.el~ file.
 This file contains personal information like name, email or other identifying information.

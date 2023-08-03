@@ -506,6 +506,18 @@ Ag.el allows you to search using ~ag~ from inside Emacs. You can filter by file 
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+END_SRC
 
+** Copilot
+#+begin_src emacs-lisp
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :ensure t)
+
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "M--") 'copilot-complete)
+#+end_src
+
 ** Elisp
 Some customization for writing elisp
 #+BEGIN_SRC emacs-lisp

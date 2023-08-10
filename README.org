@@ -225,6 +225,7 @@ These are functions for splitting windows and move the cursor over immediately.
 Rebind the default window controls to use "M-*" keys for ease-of-use
 #+begin_src emacs-lisp
   (bind-key "M-1" 'delete-other-windows)
+  (bind-key "C-M-1" 'delete-other-windows)
   (bind-key "M-0" 'delete-window)
 #+end_src
 

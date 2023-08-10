@@ -45,7 +45,7 @@ Packages provided by =straight.el= https://github.com/radian-software/straight.e
           modus-themes-preset-overrides-intense)
 
     ;; Load the theme of your choice.
-    (load-theme 'modus-operandi)
+    (load-theme 'modus-operandi t)
 
     (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 #+end_src

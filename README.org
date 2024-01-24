@@ -240,9 +240,9 @@ Rebind the default window controls to use "M-*" keys for ease-of-use
 * Fonts
 Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] font family.
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Fantasque Sans Mono-12")
-  (set-face-attribute 'fixed-pitch nil :font "Fantasque Sans Mono-12")
-  (set-face-attribute 'variable-pitch nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'default nil :font "Iosevka-12")
+  (set-face-attribute 'fixed-pitch nil :font "Iosevka-12")
+  (set-face-attribute 'variable-pitch nil :font "Iosevka-12")
 #+end_src
 
 * Completion
@@ -539,6 +539,7 @@ Some customization for writing elisp
   (slime-setup '(slime-fancy slime-quicklisp slime-asdf))
   (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 #+END_SRC
+
 * Load additional files
 All information about the current user should reside in the ~personal.el~ file.
 This file contains personal information like name, email or other identifying information.

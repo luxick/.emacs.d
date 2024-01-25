@@ -2,7 +2,6 @@
 #+PROPERTY: header-args :results silent
 This is my configuration for the emacs editor.
 
-Points of intrest:
 - Personal information (name, email) are stored in a separate ~personal.el~ file.
 - Machine specific settings are stored in a separate ~custom.el~ file.
 - Both files are loaded automatically.
@@ -53,7 +52,7 @@ Packages provided by =straight.el= https://github.com/radian-software/straight.e
 *Set up the default frame look*
 #+begin_src emacs-lisp
   (setq default-frame-alist
-        (append (list '(width  . 90) '(height . 60)
+        (append (list '(width  . 90) '(height . 50)
                       '(vertical-scroll-bars . nil)
                       '(internal-border-width . 5))))
 #+end_src

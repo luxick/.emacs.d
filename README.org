@@ -237,11 +237,11 @@ Rebind the default window controls to use "M-*" keys for ease-of-use
 #+END_SRC
 
 * Fonts
-Set up the fonts to use. I like the [[https://typeof.net/Iosevka/][Iosevka]] font family.
+Set up the fonts to use.
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Iosevka-12")
-  (set-face-attribute 'fixed-pitch nil :font "Iosevka-12")
-  (set-face-attribute 'variable-pitch nil :font "Iosevka-12")
+  (set-face-attribute 'default nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'fixed-pitch nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'variable-pitch nil :font "Fantasque Sans Mono-12")
 #+end_src
 
 * Completion

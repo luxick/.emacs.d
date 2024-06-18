@@ -79,6 +79,7 @@ Emacs sure loves to clutter directories with backup files.
 ** Setup dired
 Configure dired to only use one buffer.
 #+BEGIN_SRC emacs-lisp
+  (setf dired-kill-when-opening-new-dired-buffer t)
   (eval-after-load "dired"
     '(progn
        (defadvice dired-advertised-find-file (around dired-subst-directory activate)

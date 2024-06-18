@@ -240,16 +240,13 @@ Rebind the default window controls to use "M-*" keys for ease-of-use
 Set up the fonts to use.
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :font "Fantasque Sans Mono-12")
-  (set-face-attribute 'fixed-pitch nil :font "Fantasque Sans Mono-12")
-  (set-face-attribute 'variable-pitch nil :font "Fantasque Sans Mono-12")
+  (set-face-attribute 'fixed-pitch nil :font "Fantasque Sans Mono")
+  (set-face-attribute 'variable-pitch nil :font "Iosevka Aile")
 
 
   (let* ((variable-tuple
-          (cond ((x-list-fonts "Calibri")         '(:font "Calibri"))
-                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+          (cond ((x-list-fonts "Iosevka Aile") '(:font "Iosevka Aile"))
+                ((x-family-fonts "Sans Serif")        '(:family "Sans Serif"))
                 (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
          (base-font-color     (face-foreground 'default nil 'default))
          (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
@@ -264,11 +261,11 @@ Set up the fonts to use.
      `(org-level-3 ((t (,@headline ,@variable-tuple :height 1))))
      `(org-level-2 ((t (,@headline ,@variable-tuple :height 1))))
      `(org-level-1 ((t (,@headline ,@variable-tuple :height 1))))
-     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 1.0 :underline nil))))))
 
   (custom-theme-set-faces
    'user
-   '(variable-pitch ((t (:family "Calibri" :height 120 :weight thin))))
+   '(variable-pitch ((t (:family "Iosevka Aile" :height 120 :weight thin))))
    '(fixed-pitch ((t ( :family "Fantasque Sans Mono" :height 120)))))
 #+end_src
 
@@ -406,29 +403,26 @@ Don't prompt to save unmodified buffers on exit.
 * Org Mode
 Configuration to make org-mode better as a word processor
 #+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
+  (use-package org-modern
+    :straight t
+    :hook (org-mode . org-modern-mode))
 
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
 
-  (add-hook 'org-mode-hook 'variable-pitch-mode)
-  (add-hook 'org-mode-hook 'visual-line-mode)
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   )
 
-  (custom-theme-set-faces
-   'user
-   '(org-block ((t (:inherit fixed-pitch))))
-   '(org-code ((t (:inherit (shadow fixed-pitch)))))
-   '(org-document-info ((t (:foreground "dark orange"))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-   '(org-link ((t (:foreground "royal blue" :underline t))))
-   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value ((t (:inherit fixed-pitch))) t)
-   '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
-   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+  ;; Ellipsis styling
+  (setq org-ellipsis "…")
+  (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
 #+END_SRC
 
 ** Archive Location

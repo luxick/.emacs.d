@@ -439,6 +439,9 @@ Configuration to make org-mode better as a word processor
   ;; Ellipsis styling
   (setq org-ellipsis "…")
   (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+
+  ;; Always collapse org files
+  (setq org-startup-folded t)
 #+END_SRC
 
 ** Archive Location

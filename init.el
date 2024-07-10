@@ -394,4 +394,12 @@
   (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
   (kill-buffer))
 
+;; Start the emacs server
+;; This is necessary for the emacsclient to work
+(use-package server
+  :straight nil
+  :config
+  (unless (server-running-p)
+    (server-start)))
+
 (provide 'init)

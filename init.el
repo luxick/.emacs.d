@@ -4,10 +4,6 @@
 (set-language-environment 'utf-8)
 (set-selection-coding-system 'utf-8)
 
-;; custom.el - device specific settings
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
-
 ;; personal.el - personal settings
 (setq personal-file "~/.emacs.d/personal.el")
 (load personal-file 'noerror)
@@ -401,5 +397,9 @@
   :config
   (unless (server-running-p)
     (server-start)))
+
+;; custom.el - device specific settings
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
 
 (provide 'init)

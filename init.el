@@ -118,10 +118,6 @@
   (dired-omit-mode 1))
 (add-hook 'dired-mode-hook 'my-dired-init)
 
-;; Ranger
-(use-package ranger :straight t)
-(ranger-override-dired-mode t)
-
 ;; All "Yes or No" questions can be shortend to "y or n".
 (defalias 'yes-or-no-p 'y-or-n-p)
 

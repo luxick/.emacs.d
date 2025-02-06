@@ -65,24 +65,6 @@
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Term-12")
 (set-face-attribute 'variable-pitch nil :font "Iosevka Aile")
 
-(let* ((variable-tuple
-        (cond ((x-list-fonts "Iosevka Aile") '(:font "Iosevka Aile"))
-              ((x-family-fonts "Sans Serif")        '(:family "Sans Serif"))
-              (nil (warn "Cannot find a Sans Serif Font.  Install Iosevka Aile."))))
-       (headline           `(:inherit default :weight bold)))
-
-  (custom-theme-set-faces
-   'user
-   `(org-level-8 ((t (,@headline ,@variable-tuple))))
-   `(org-level-7 ((t (,@headline ,@variable-tuple))))
-   `(org-level-6 ((t (,@headline ,@variable-tuple))))
-   `(org-level-5 ((t (,@headline ,@variable-tuple))))
-   `(org-level-4 ((t (,@headline ,@variable-tuple))))
-   `(org-level-3 ((t (,@headline ,@variable-tuple))))
-   `(org-level-2 ((t (,@headline ,@variable-tuple))))
-   `(org-level-1 ((t (,@headline ,@variable-tuple))))
-   `(org-document-title ((t (,@headline ,@variable-tuple :underline nil))))))
-
 (custom-theme-set-faces
  'user
  '(variable-pitch ((t (:family "Iosevka Aile" :height 120 :weight thin))))

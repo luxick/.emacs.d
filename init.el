@@ -368,14 +368,6 @@
   (when (current-buffer-matches-file-p) (set-buffer-modified-p nil))
   (kill-buffer))
 
-;; Start the emacs server
-;; This is necessary for the emacsclient to work
-(use-package server
-  :straight nil
-  :config
-  (unless (server-running-p)
-    (server-start)))
-
 ;; custom.el - device specific settings
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)

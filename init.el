@@ -43,9 +43,19 @@
         modus-themes-preset-overrides-intense)
 
   ;; Load the theme of your choice.
-  (load-theme 'modus-operandi t)
+  (if (file-exists-p "~/.emacs.d/dark-mode")
+      (load-theme 'modus-vivendi t)
+    (load-theme 'modus-operandi t))
 
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+  (define-key global-map (kbd "<f5>")
+              (lambda ()
+                (interactive)
+                (let ((dark-mode-file "~/.emacs.d/dark-mode"))
+                  (if (file-exists-p dark-mode-file)
+                      (delete-file dark-mode-file)
+                    (with-temp-buffer
+                      (write-file dark-mode-file)))
+                  (modus-themes-toggle)))))
 
 ;; Default frame size
 (setq default-frame-alist

@@ -88,6 +88,26 @@
 (setq create-lockfiles nil)
 
 ;; Dired settings
+(defun embark-open-externally (file)
+  "Open FILE externally using the default application of the system."
+  (interactive "fOpen externally: ")
+  (if (and (eq system-type 'windows-nt)
+           (fboundp 'w32-shell-execute))
+      (w32-shell-execute "open" file)
+    (call-process (pcase system-type
+                    ('darwin "open")
+                    ('cygwin "cygstart")
+                    (_ "xdg-open"))
+                  nil 0 nil
+                  (expand-file-name file))))
+
+(defun dired-open-externally (&optional arg)
+  "Open marked or current file in operating system's default application."
+  (interactive "P")
+  (dired-map-over-marks
+   (embark-open-externally (dired-get-filename))
+   arg))
+
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq dired-listing-switches "-laGh1v --group-directories-first")
 (setq dired-omit-files
@@ -100,7 +120,8 @@
   "to be run as hook for `dired-mode'."
   (interactive)
   (dired-hide-details-mode 1)
-  (dired-omit-mode 1))
+  (dired-omit-mode 1)
+  (bind-key "E" 'dired-open-externally))
 (add-hook 'dired-mode-hook 'my-dired-init)
 
 ;; All "Yes or No" questions can be shortend to "y or n".

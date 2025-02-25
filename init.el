@@ -61,14 +61,7 @@
 (fringe-mode -1)
 
 ;; Font settings
-(set-face-attribute 'default nil :font "Iosevka Term-12")
-(set-face-attribute 'fixed-pitch nil :font "Iosevka Term-12")
-(set-face-attribute 'variable-pitch nil :font "Iosevka Aile")
-
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "Iosevka Aile" :height 120 :weight thin))))
- '(fixed-pitch ((t ( :family "Iosevka Term" :height 120)))))
+(set-face-attribute 'default nil :font "Adwaita Mono-11")
 
 ;; Icons
 (use-package all-the-icons

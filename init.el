@@ -29,23 +29,13 @@
 (straight-use-package 'bind-key)
 
 ;; Themeing
-
-;; use modus themes
-(use-package modus-themes
+(use-package solarized-theme
   :straight t
   :config
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil)
-
-  ;; Maybe define some palette overrides, such as by using our presets
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
-
   ;; Load the theme of your choice.
   (if (file-exists-p "~/.emacs.d/dark-mode")
-      (load-theme 'modus-vivendi t)
-    (load-theme 'modus-operandi t))
+      (load-theme 'solarized-dark t)
+    (load-theme 'solarized-light t))
 
   (define-key global-map (kbd "<f5>")
               (lambda ()
@@ -55,7 +45,7 @@
                       (delete-file dark-mode-file)
                     (with-temp-buffer
                       (write-file dark-mode-file)))
-                  (modus-themes-toggle)))))
+                  (solarized-toggle-theme)))))
 
 ;; Default frame size
 (setq default-frame-alist

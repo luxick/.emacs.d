@@ -59,9 +59,8 @@
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (fringe-mode -1)
-
 ;; Font settings
-(set-face-attribute 'default nil :font "Iosevka-11")
+(set-face-attribute 'default nil :font "Inconsolata-12")
 (set-face-attribute 'fixed-pitch nil :family 'unspecified)
 (set-face-attribute 'variable-pitch nil :family 'unspecified)
 

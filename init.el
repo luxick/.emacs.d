@@ -217,6 +217,15 @@
      ((t (:inherit ace-jump-face-foreground :height 3.0))))
    ))
 
+(use-package multiple-cursors
+  :straight t
+  :bind
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C->" . mc/mark-next-like-this)
+   ("C-<" . mc/mark-previous-like-this)
+   ("C-c C-<" . mc/mark-all-like-this)))
+(global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click)
+
 ;; Ivy completion
 (use-package ivy
   :straight t

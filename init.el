@@ -29,13 +29,13 @@
 (straight-use-package 'bind-key)
 
 ;; Themeing
-(use-package solarized-theme
+(use-package modus-themes
   :straight t
   :config
   ;; Load the theme of your choice.
   (if (file-exists-p "~/.emacs.d/dark-mode")
-      (load-theme 'solarized-dark t)
-    (load-theme 'solarized-light t))
+      (load-theme 'modus-vivendi t)
+    (load-theme 'modus-operandi t))
 
   (define-key global-map (kbd "<f5>")
               (lambda ()
@@ -45,13 +45,13 @@
                       (delete-file dark-mode-file)
                     (with-temp-buffer
                       (write-file dark-mode-file)))
-                  (solarized-toggle-theme)))))
+                  (modus-themes-toggle))))
 
-;; Default frame size
-(setq default-frame-alist
-      (append (list '(width  . 90) '(height . 50)
-                    '(vertical-scroll-bars . nil)
-                    '(internal-border-width . 5))))
+  ;; Default frame size
+  (setq default-frame-alist
+        (append (list '(width  . 90) '(height . 50)
+                      '(vertical-scroll-bars . nil)
+                      '(internal-border-width . 5)))))
 
 ;; Disable some UI elements
 (tool-bar-mode -1)

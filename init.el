@@ -168,9 +168,11 @@
 (bind-key "C--"        'text-scale-decrease)
 (bind-key "C-x C-b"    'ibuffer)
 (bind-key "C-c n"      'display-line-numbers-mode)
-(bind-key "M-1" 'delete-other-windows)
-(bind-key "C-M-1" 'delete-other-windows)
-(bind-key "M-0" 'delete-window)
+(bind-key "M-1"        'delete-other-windows)
+(bind-key "C-M-1"      'delete-other-windows)
+(bind-key "M-0"        'delete-window)
+(bind-key "C-S"        'save-buffer)
+
 (global-set-key (kbd "<f12>") 'menu-bar-mode)
 
 
@@ -238,7 +240,7 @@
         ivy-use-selectable-prompt t)
   :bind (("C-x b"   . ivy-switch-buffer)
          ("C-c C-r" . ivy-resume)
-         ("C-s"     . swiper)))
+         ("C-M-s"     . swiper)))
 
 ;; ivy-rich makes Ivy look a little bit more like Helm.
 (use-package ivy-rich

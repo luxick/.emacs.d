@@ -132,7 +132,7 @@
 
 ;; Configure the cursor
 (setq-default
- cursor-type 'bar
+ cursor-type 'box
  indent-tabs-mode nil
  cursor-in-non-selected-windows nil)
 (blink-cursor-mode 0)
@@ -221,6 +221,8 @@
 
 (use-package multiple-cursors
   :straight t
+  :init
+  (setq mc/always-run-for-all t)
   :bind
   (("C-S-c C-S-c" . mc/edit-lines)
    ("C->" . mc/mark-next-like-this)

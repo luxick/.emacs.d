@@ -118,7 +118,8 @@
   (interactive)
   (dired-hide-details-mode 1)
   (dired-omit-mode 1)
-  (bind-key "E" 'dired-open-externally))
+  (bind-key "E" 'dired-open-externally)
+  (bind-key "`" 'dired-up-directory))
 (add-hook 'dired-mode-hook 'my-dired-init)
 
 ;; All "Yes or No" questions can be shortend to "y or n".

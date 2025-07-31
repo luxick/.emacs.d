@@ -99,6 +99,12 @@
    (embark-open-externally (dired-get-filename))
    arg))
 
+(use-package dired-preview
+  :straight t
+  :config
+  (dired-preview-global-mode)
+  (setq dired-preview-delay 0.5))
+
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq dired-listing-switches "-laGh1v --group-directories-first")
 (setq dired-omit-files

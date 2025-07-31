@@ -159,6 +159,9 @@
 ;; Better line wraping
 (global-visual-line-mode 1)
 
+;; Links should always be clickable
+(global-goto-address-mode 1)
+
 ;; Keybindings
 (bind-key "C-x k"      'kill-buffer-with-prejudice)
 (bind-key "C-w"        'kill-buffer-with-prejudice)

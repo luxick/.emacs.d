@@ -326,9 +326,9 @@
     (setq markdown-command "pandoc -f markdown -t html")))
 
 ;; Org mode
-(use-package org-modern
-  :straight t
-  :hook (org-mode . org-modern-mode))
+;;(use-package org-modern
+;;  :straight t
+;;  :hook (org-mode . org-modern-mode))
 
 (setq
  ;; Edit settings

@@ -100,10 +100,7 @@
    arg))
 
 (use-package dired-preview
-  :straight t
-  :config
-  (dired-preview-global-mode)
-  (setq dired-preview-delay 0.5))
+  :straight t)
 
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq dired-listing-switches "-laGh1v --group-directories-first")
@@ -119,6 +116,7 @@
   (dired-hide-details-mode 1)
   (dired-omit-mode 1)
   (define-key dired-mode-map (kbd "`") #'dired-up-directory)
+  (define-key dired-mode-map (kbd "<f1>") #'dired-preview-mode)
   (define-key dired-mode-map (kbd "E") #'dired-open-externally))
 (add-hook 'dired-mode-hook 'my-dired-init)
 

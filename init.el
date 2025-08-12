@@ -325,11 +325,6 @@
   (when (executable-find "pandoc")
     (setq markdown-command "pandoc -f markdown -t html")))
 
-;; Org mode
-;;(use-package org-modern
-;;  :straight t
-;;  :hook (org-mode . org-modern-mode))
-
 (setq
  ;; Edit settings
  org-auto-align-tags nil
@@ -338,9 +333,6 @@
  org-special-ctrl-a/e t
  org-insert-heading-respect-content t
  )
-
-;; Always collapse org files
-(setq org-startup-folded t)
 
 ;; Programming configuration
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)

@@ -211,6 +211,13 @@
   (other-window 1))
 (bind-key "M-2" 'lux/split-below-and-enter)
 
+(defun date (arg)
+  (interactive "P")
+  (insert (if arg
+              (format-time-string "%d.%m.%Y")
+            (format-time-string "%Y-%m-%d"))))
+(bind-key "C-M-d" 'date)
+
 (defun switch-to-previous-buffer ()
   "Switch to previously open buffer.Repeated invocations toggle between the two most recently open buffers."
   (interactive)
